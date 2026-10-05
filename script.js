@@ -97,6 +97,64 @@
   window.addEventListener('resize', buildDots);
   buildDots();
 
+  /* ---------- Появление блоков и отсчёт цифр ---------- */
+  const animOn = document.documentElement.classList.contains('js-anim');
+  window.__revealReady = true;
+
+  const countUp = (el) => {
+    const to = Number(el.dataset.to);
+    if (!to || to <= 1) return;
+    const duration = to >= 100 ? 1600 : 1100;
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = String(Math.max(1, Math.round(1 + (to - 1) * eased)));
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = String(to);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  if (animOn) {
+    // До появления блока числа стоят на «1»; ширина — как у итогового числа,
+    // чтобы соседний текст не дёргался во время отсчёта
+    document.querySelectorAll('.count').forEach((el) => {
+      el.style.minWidth = el.dataset.to.length + 'ch';
+      if (Number(el.dataset.to) > 1) el.textContent = '1';
+    });
+
+    const STAGGER = 120;
+    // Элементы, появившиеся одновременно, проявляются по очереди
+    const reveal = (els) => {
+      els.sort((x, y) => {
+        const a = x.getBoundingClientRect(), b = y.getBoundingClientRect();
+        return a.top - b.top || a.left - b.left;
+      }).forEach((el, i) => {
+        const delay = i * STAGGER;
+        el.style.setProperty('--rv-delay', delay + 'ms');
+        el.classList.add('is-in');
+        revealIO.unobserve(el);
+        el.querySelectorAll('.count').forEach((c) => setTimeout(() => countUp(c), delay + 150));
+      });
+    };
+    const revealIO = new IntersectionObserver((entries) => {
+      reveal(entries.filter((e) => e.isIntersecting).map((e) => e.target));
+    }, { threshold: 0.2 });
+
+    const targets = [...document.querySelectorAll('[data-reveal]')];
+    targets.forEach((el) => revealIO.observe(el));
+    // То, что уже видно на первом экране, проявляем сразу, не дожидаясь прокрутки
+    requestAnimationFrame(() => {
+      reveal(targets.filter((el) => {
+        // Та же мера, что у наблюдателя: видно не меньше 20% элемента
+        const r = el.getBoundingClientRect();
+        const shown = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+        return !el.classList.contains('is-in') && r.height > 0 && shown / r.height >= 0.2;
+      }));
+    });
+  }
+
   /* ---------- Калькулятор ---------- */
   const DAYS = { 6000: 25, 14000: 50, 22000: 60, 11000: 45 };
   const area = document.getElementById('calc-area');

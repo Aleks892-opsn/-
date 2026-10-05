@@ -14,6 +14,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E0D0C'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='17' fill='%23C9A268' text-anchor='middle'%3ERD%3C/text%3E%3C/svg%3E">
+  <script>
+    // Анимации появления включаем только если браузер их поддерживает
+    // и пользователь не просил уменьшить движение
+    (function () {
+      var d = document.documentElement;
+      if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      d.classList.add('js-anim');
+      // Страховка: если script.js не загрузился, контент не останется скрытым
+      setTimeout(function () { if (!window.__revealReady) d.classList.remove('js-anim'); }, 3000);
+    })();
+  </script>
 </head>
 <body>
   <!-- Набор линейных иконок (толщина 1.25px) -->
@@ -112,11 +123,11 @@
           </div>
         </div>
 
-        <ul class="hero__facts">
-          <li><strong>12</strong><span>лет на рынке<br>ремонта</span></li>
-          <li><strong>740+</strong><span>сданных<br>квартир</span></li>
-          <li><strong>3 года</strong><span>гарантии<br>по договору</span></li>
-          <li><strong>60</strong><span>дней — срок<br>в договоре</span></li>
+        <ul class="hero__facts" data-reveal-group>
+          <li data-reveal><strong><span class="count" data-to="12">12</span></strong><span>лет на рынке<br>ремонта</span></li>
+          <li data-reveal><strong><span class="count" data-to="740">740</span>+</strong><span>сданных<br>квартир</span></li>
+          <li data-reveal><strong><span class="count" data-to="3">3</span> года</strong><span>гарантии<br>по договору</span></li>
+          <li data-reveal><strong><span class="count" data-to="60">60</span></strong><span>дней — срок<br>в договоре</span></li>
         </ul>
       </div>
     </section>
@@ -124,13 +135,13 @@
     <!-- ===== 2. Услуги ===== -->
     <section class="section" id="services">
       <div class="container">
-        <div class="section__head">
+        <div class="section__head" data-reveal>
           <p class="eyebrow">Услуги</p>
           <h2 class="section__title">Какой ремонт <em>делаем</em></h2>
         </div>
 
         <div class="services">
-          <article class="service">
+          <article class="service" data-reveal>
             <figure class="ph ph--card">
               <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
               <figcaption class="ph__label">Светлая комната после покраски стен и замены напольного покрытия. 4:3</figcaption>
@@ -140,7 +151,7 @@
             <p class="service__meta"><span class="service__price">от 6 000 ₽/м²</span><span>от 25 дней</span></p>
           </article>
 
-          <article class="service">
+          <article class="service" data-reveal>
             <figure class="ph ph--card">
               <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
               <figcaption class="ph__label">Крупный план фактур: штукатурка, разводка электрики, стяжка. 4:3</figcaption>
@@ -150,7 +161,7 @@
             <p class="service__meta"><span class="service__price">от 14 000 ₽/м²</span><span>от 50 дней</span></p>
           </article>
 
-          <article class="service">
+          <article class="service" data-reveal>
             <figure class="ph ph--card">
               <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
               <figcaption class="ph__label">Деталь дизайнерского интерьера: камень, латунь, тёплая подсветка. 4:3</figcaption>
@@ -160,7 +171,7 @@
             <p class="service__meta"><span class="service__price">от 22 000 ₽/м²</span><span>от 60 дней</span></p>
           </article>
 
-          <article class="service">
+          <article class="service" data-reveal>
             <figure class="ph ph--card">
               <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
               <figcaption class="ph__label">Готовая квартира в новостройке, вечерний вид на ЖК из окна. 4:3</figcaption>
