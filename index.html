@@ -32,6 +32,8 @@
       <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="1"/><path d="m22 6-10 7L2 6"/></symbol>
       <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.56.95-4.75 4.63 1.12 6.54L12 17.5l-5.87 3.08 1.12-6.54L2.5 9.41l6.56-.95z"/></symbol>
+      <symbol id="i-quote" viewBox="0 0 24 24"><path d="M10 7.5C7 8.5 5 10.8 5 14v3.5h5V13H7.6c.3-1.6 1.4-2.8 3-3.4zM19 7.5c-3 1-5 3.3-5 6.5v3.5h5V13h-2.4c.3-1.6 1.4-2.8 3-3.4z"/></symbol>
     </defs>
   </svg>
 
@@ -370,28 +372,83 @@
     <!-- ===== 7. Отзывы ===== -->
     <section class="section section--alt" id="reviews">
       <div class="container">
-        <div class="section__head">
-          <p class="eyebrow">Отзывы</p>
-          <h2 class="section__title">Что говорят <em>клиенты</em></h2>
+        <div class="section__head section__head--center">
+          <p class="eyebrow eyebrow--dash">Отзывы клиентов</p>
+          <h2 class="section__title">Что говорят <em>наши клиенты</em></h2>
           <p class="section__note">Примеры отзывов — замените их отзывами реальных клиентов.</p>
         </div>
 
-        <div class="reviews">
+        <div class="reviews" id="reviews-list">
           <figure class="review">
-            <span class="review__quote" aria-hidden="true">“</span>
+            <div class="review__top">
+              <figcaption class="review__who">
+                <b>Анна Котова</b>
+                <span>Новая Москва · новостройка, 62&nbsp;м²</span>
+                <span class="review__rating" aria-label="Оценка 5 из 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><em>5.0</em></span>
+              </figcaption>
+              <span class="review__quote" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-quote"/></svg></span>
+            </div>
             <blockquote>Делали ремонт в новостройке из бетона. Уложились в 57 дней, смета не изменилась ни на рубль. Фотоотчёты каждый вечер — я живу в другом городе, и это очень удобно.</blockquote>
-            <figcaption><b>Анна Котова</b><span>Новая Москва, ЖК «Испанские кварталы»</span></figcaption>
           </figure>
           <figure class="review">
-            <span class="review__quote" aria-hidden="true">“</span>
+            <div class="review__top">
+              <figcaption class="review__who">
+                <b>Дмитрий Смирнов</b>
+                <span>Хорошёво-Мнёвники · дизайнерский, 58&nbsp;м²</span>
+                <span class="review__rating" aria-label="Оценка 5 из 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><em>5.0</em></span>
+              </figcaption>
+              <span class="review__quote" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-quote"/></svg></span>
+            </div>
             <blockquote>Заказывали дизайнерский ремонт двушки. Дизайнер предложила перепланировку, и появилась отдельная гардеробная. Прорабу Сергею отдельное спасибо за аккуратность.</blockquote>
-            <figcaption><b>Дмитрий Смирнов</b><span>Хорошёво-Мнёвники</span></figcaption>
           </figure>
           <figure class="review">
-            <span class="review__quote" aria-hidden="true">“</span>
+            <div class="review__top">
+              <figcaption class="review__who">
+                <b>Елена Васильева</b>
+                <span>Басманный район · капитальный, 74&nbsp;м²</span>
+                <span class="review__rating" aria-label="Оценка 5 из 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><em>5.0</em></span>
+              </figcaption>
+              <span class="review__quote" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-quote"/></svg></span>
+            </div>
             <blockquote>Капремонт в старом фонде: меняли всю проводку и трубы. Платили по этапам и каждый принимали лично. Через год потекла труба — приехали и исправили по гарантии.</blockquote>
-            <figcaption><b>Елена Васильева</b><span>Басманный район</span></figcaption>
           </figure>
+          <figure class="review">
+            <div class="review__top">
+              <figcaption class="review__who">
+                <b>Игорь Белов</b>
+                <span>Митино · капитальный, 96&nbsp;м²</span>
+                <span class="review__rating" aria-label="Оценка 5 из 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><em>5.0</em></span>
+              </figcaption>
+              <span class="review__quote" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-quote"/></svg></span>
+            </div>
+            <blockquote>Боялся, что ремонт растянется на полгода. Сдали за 60 дней, как в договоре. Все скрытые работы показали на фото до того, как закрыли стены.</blockquote>
+          </figure>
+          <figure class="review" hidden>
+            <div class="review__top">
+              <figcaption class="review__who">
+                <b>Мария Орлова</b>
+                <span>Сокольники · косметический, 52&nbsp;м²</span>
+                <span class="review__rating" aria-label="Оценка 5 из 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><em>5.0</em></span>
+              </figcaption>
+              <span class="review__quote" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-quote"/></svg></span>
+            </div>
+            <blockquote>Освежили квартиру перед сдачей в аренду за 27 дней. Помогли выбрать недорогие, но приличные материалы, уложились в бюджет.</blockquote>
+          </figure>
+          <figure class="review" hidden>
+            <div class="review__top">
+              <figcaption class="review__who">
+                <b>Сергей и Ольга Ким</b>
+                <span>ЖК «Символ» · дизайнерский, 78&nbsp;м²</span>
+                <span class="review__rating" aria-label="Оценка 5 из 5"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><em>5.0</em></span>
+              </figcaption>
+              <span class="review__quote" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-quote"/></svg></span>
+            </div>
+            <blockquote>Понравилось, что дизайнер ездила на объект и сама проверяла, как выполнены узлы. Результат совпал с 3D-визуализацией почти один в один.</blockquote>
+          </figure>
+        </div>
+
+        <div class="reviews__more">
+          <button type="button" class="btn btn--primary btn--round" id="reviews-more" aria-controls="reviews-list">Показать ещё</button>
         </div>
       </div>
     </section>

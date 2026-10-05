@@ -63,6 +63,7 @@
   /* Форма */
   --radius: 2px;
   --radius-pill: 999px;
+  --radius-card: 16px;
   --hairline: 1px solid var(--line);
 
   /* Движение */
@@ -842,39 +843,92 @@ em { font-style: italic; }
 .calc__rows dd { font-weight: 600; font-variant-numeric: tabular-nums; }
 .calc__note { margin: var(--space-5) 0 var(--space-6); color: var(--sand-500); font-size: 12px; line-height: 1.5; }
 
-/* ---------- 7. Отзывы ---------- */
-.reviews { display: grid; grid-template-columns: repeat(3, 1fr); }
+/* ---------- 7. Отзывы: карточки в 2 колонки ---------- */
+.section__head--center {
+  margin-inline: auto;
+  text-align: center;
+}
+.section__head--center .section__note { margin-inline: auto; }
+.eyebrow--dash {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.eyebrow--dash::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+}
+
+.reviews {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gutter);
+  max-width: 1040px;
+  margin-inline: auto;
+}
 .review {
   display: flex;
   flex-direction: column;
-  padding: 0 var(--space-6);
-  border-left: var(--hairline);
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--ink-700);
+  border: var(--hairline);
+  border-radius: var(--radius-card);
+  transition: border-color var(--t-fast), transform var(--t-fast);
 }
-.review:first-child { padding-left: 0; border-left: 0; }
-.review__quote {
-  height: 48px;
+.review:hover { border-color: var(--line-strong); transform: translateY(-3px); }
+.review[hidden] { display: none; }
+.review.is-new { animation: faq-in 500ms var(--ease); }
+
+.review__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.review__who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.review__who b {
   font-family: var(--font-display);
-  font-size: 96px;
-  line-height: 1;
-  color: var(--gold-500);
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  line-height: 1.2;
 }
-.review blockquote {
-  flex: 1;
-  margin-bottom: var(--space-6);
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-style: italic;
-  font-weight: 300;
-  line-height: 1.45;
+.review__who > span:not(.review__rating) { color: var(--sand-300); font-size: var(--fs-small); }
+.review__rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: var(--space-2);
 }
-.review figcaption { display: flex; flex-direction: column; gap: 2px; }
-.review figcaption b {
-  font-size: var(--fs-label);
+.review__rating svg { width: 18px; height: 18px; fill: var(--gold-500); }
+.review__rating em {
+  margin-left: var(--space-2);
+  font-style: normal;
+  font-size: var(--fs-small);
   font-weight: 600;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }
-.review figcaption span { color: var(--sand-300); font-size: var(--fs-small); }
+.review__quote {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ink-900);
+  border: var(--hairline);
+  transition: background-color var(--t-fast);
+}
+.review__quote svg { width: 24px; height: 24px; fill: var(--gold-500); transition: fill var(--t-fast); }
+.review:hover .review__quote { background: var(--gold-500); }
+.review:hover .review__quote svg { fill: var(--ink-900); }
+.review blockquote { color: var(--sand-300); line-height: 1.65; }
+
+.reviews__more { display: flex; justify-content: center; margin-top: var(--space-7); }
+.reviews__more[hidden] { display: none; }
+.btn--round { border-radius: var(--radius-pill); }
 
 /* ---------- 8. FAQ ---------- */
 .faq-wrap {
@@ -1186,9 +1240,7 @@ a.footer__line:hover { color: var(--gold-500); }
   .calc { grid-template-columns: minmax(0, 1fr); }
   .calc__result { border-left: 0; border-top: var(--hairline); }
 
-  .reviews { grid-template-columns: 1fr; gap: var(--space-7); }
-  .review { padding: 0; border-left: 0; }
-  .review + .review { padding-top: var(--space-7); border-top: var(--hairline); }
+  .reviews { grid-template-columns: minmax(0, 1fr); max-width: 640px; }
 
   .faq-wrap { grid-template-columns: 1fr; gap: var(--space-6); }
   .faq-wrap .section__head { padding-right: 0; }
@@ -1232,6 +1284,8 @@ a.footer__line:hover { color: var(--gold-500); }
   .form { padding: var(--space-6) var(--space-5); }
 
   .calc__price { font-size: 40px; }
+  .review { padding: var(--space-5); }
+  .review__quote { width: 48px; height: 48px; }
   .faq__item summary { font-size: 22px; padding-right: var(--space-7); }
 
   .footer__grid { grid-template-columns: 1fr; gap: var(--space-6); }

@@ -258,6 +258,19 @@
     }, 800);
   });
 
+  /* ---------- Отзывы: «Показать ещё» ---------- */
+  const moreBtn = document.getElementById('reviews-more');
+  const REVIEWS_STEP = 2;
+  const hiddenReviews = () => document.querySelectorAll('#reviews-list .review[hidden]');
+  moreBtn.parentElement.hidden = hiddenReviews().length === 0;
+  moreBtn.addEventListener('click', () => {
+    [...hiddenReviews()].slice(0, REVIEWS_STEP).forEach((r) => {
+      r.hidden = false;
+      r.classList.add('is-new');
+    });
+    if (!hiddenReviews().length) moreBtn.parentElement.hidden = true;
+  });
+
   /* ---------- FAQ: открыт только один вопрос ---------- */
   const faqItems = document.querySelectorAll('.faq__item');
   faqItems.forEach((item) => {
