@@ -4,8 +4,6 @@
 (function () {
   'use strict';
 
-  document.documentElement.classList.remove('no-js');
-
   /* ---------- Шапка: тень при прокрутке ---------- */
   const header = document.getElementById('header');
   const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 10);
@@ -32,7 +30,7 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') setMenu(false);
   });
-  window.matchMedia('(min-width: 1025px)').addEventListener('change', (e) => {
+  window.matchMedia('(min-width: 1101px)').addEventListener('change', (e) => {
     if (e.matches) setMenu(false);
   });
 
@@ -54,28 +52,50 @@
     sections.forEach((s) => spy.observe(s));
   }
 
-  /* ---------- Появление блоков при прокрутке ---------- */
-  const revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  /* ---------- Карусель портфолио ---------- */
+  const track = document.getElementById('pf-track');
+  const prev = document.getElementById('pf-prev');
+  const next = document.getElementById('pf-next');
+  const dotsBox = document.getElementById('pf-dots');
 
-    revealEls.forEach((el) => {
-      // Небольшая задержка для соседних карточек в сетке
-      const siblings = [...el.parentElement.children].filter((c) => c.classList.contains('reveal'));
-      const idx = siblings.indexOf(el);
-      if (siblings.length > 1) el.style.transitionDelay = (idx % 5) * 80 + 'ms';
-      io.observe(el);
-    });
-  } else {
-    revealEls.forEach((el) => el.classList.add('is-visible'));
-  }
+  const cardStep = () => {
+    const card = track.querySelector('.project');
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    return card.getBoundingClientRect().width + gap;
+  };
+  const pageCount = () => {
+    const perView = Math.max(1, Math.round(track.clientWidth / cardStep()));
+    return Math.max(1, track.children.length - perView + 1);
+  };
+  const currentIndex = () => Math.round(track.scrollLeft / cardStep());
+  const goTo = (i) => track.scrollTo({ left: i * cardStep() });
+
+  const buildDots = () => {
+    const n = pageCount();
+    dotsBox.innerHTML = '';
+    dotsBox.hidden = n < 2;
+    for (let i = 0; i < n; i++) {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.setAttribute('role', 'tab');
+      d.setAttribute('aria-label', 'Проекты, страница ' + (i + 1));
+      d.addEventListener('click', () => goTo(i));
+      dotsBox.appendChild(d);
+    }
+    syncCarousel();
+  };
+  const syncCarousel = () => {
+    const i = Math.min(currentIndex(), pageCount() - 1);
+    [...dotsBox.children].forEach((d, k) => d.setAttribute('aria-selected', String(k === i)));
+    prev.disabled = track.scrollLeft <= 2;
+    next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+  };
+
+  prev.addEventListener('click', () => goTo(currentIndex() - 1));
+  next.addEventListener('click', () => goTo(currentIndex() + 1));
+  track.addEventListener('scroll', () => requestAnimationFrame(syncCarousel), { passive: true });
+  window.addEventListener('resize', buildDots);
+  buildDots();
 
   /* ---------- Калькулятор ---------- */
   const DAYS = { 6000: 25, 14000: 50, 22000: 60, 11000: 45 };
@@ -135,17 +155,22 @@
   const phone = document.getElementById('lead-phone');
 
   const formatPhone = (value) => {
-    let d = value.replace(/\D/g, '');
+    let d;
+    if (value.includes('+7')) {
+      // Префикс уже есть: берём цифры без него, где бы ни стоял курсор
+      d = value.replace('+7', '').replace(/\D/g, '');
+    } else {
+      d = value.replace(/\D/g, '');
+      // Вставили номер целиком с 7 или 8 в начале
+      if (d.length >= 11 && (d[0] === '7' || d[0] === '8')) d = d.slice(1);
+      else if (d === '7' || d === '8') d = '';
+    }
+    d = d.slice(0, 10);
     if (!d) return '';
-    if (d[0] === '8') d = '7' + d.slice(1);
-    if (d[0] !== '7') d = '7' + d;
-    d = d.slice(0, 11);
-    let out = '+7';
-    if (d.length > 1) out += ' (' + d.slice(1, 4);
-    if (d.length >= 4) out += ')';
-    if (d.length > 4) out += ' ' + d.slice(4, 7);
-    if (d.length > 7) out += '-' + d.slice(7, 9);
-    if (d.length > 9) out += '-' + d.slice(9, 11);
+    let out = '+7 (' + d.slice(0, 3);
+    if (d.length > 3) out += ') ' + d.slice(3, 6);
+    if (d.length > 6) out += '-' + d.slice(6, 8);
+    if (d.length > 8) out += '-' + d.slice(8, 10);
     return out;
   };
 
@@ -154,6 +179,8 @@
   });
   phone.addEventListener('focus', () => {
     if (!phone.value) phone.value = '+7 (';
+    // Ставим курсор в конец, иначе первая цифра попадёт перед «+7»
+    requestAnimationFrame(() => phone.setSelectionRange(phone.value.length, phone.value.length));
   });
   phone.addEventListener('blur', () => {
     if (phone.value.replace(/\D/g, '').length <= 1) phone.value = '';
@@ -218,13 +245,14 @@
     // TODO: подключите отправку заявки (CRM, Telegram-бот, почта и т.п.)
     // fetch('/api/lead', { method: 'POST', body: new FormData(form) })
     const btn = form.querySelector('button[type="submit"]');
+    const btnHtml = btn.innerHTML;
     btn.disabled = true;
     btn.textContent = 'Отправляем…';
 
     setTimeout(() => {
       form.reset();
       btn.disabled = false;
-      btn.textContent = 'Вызвать замерщика';
+      btn.innerHTML = btnHtml;
       status.textContent = 'Спасибо! Мы перезвоним вам в течение 15 минут.';
       status.classList.add('is-success');
     }, 800);
