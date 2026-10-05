@@ -500,7 +500,7 @@ em { font-style: italic; }
   color: var(--gold-500);
   white-space: nowrap;
 }
-.hero__facts span { font-size: 13px; line-height: 1.4; color: var(--sand-300); }
+.hero__facts li > span { font-size: 13px; line-height: 1.4; color: var(--sand-300); }
 
 /* ---------- Секции ---------- */
 .section { padding-block: var(--section-y); }
