@@ -412,6 +412,27 @@
     });
   });
 
+  /* ---------- Панель связи внизу экрана ---------- */
+  // Появляется, когда первый экран ушёл вверх; прячется, пока заполняют поле,
+  // чтобы не закрывать его вместе с клавиатурой
+  const actionBar = document.getElementById('action-bar');
+  const hero = document.getElementById('top');
+  let heroGone = false;
+  let typing = false;
+  const syncBar = () => actionBar.classList.toggle('is-visible', heroGone && !typing);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      heroGone = !entry.isIntersecting;
+      syncBar();
+    }, { rootMargin: '-120px 0px 0px 0px' }).observe(hero);
+  } else {
+    heroGone = true;
+    syncBar();
+  }
+  const isField = (el) => el.matches && el.matches('input:not([type="radio"]):not([type="checkbox"]), textarea');
+  document.addEventListener('focusin', (e) => { if (isField(e.target)) { typing = true; syncBar(); } });
+  document.addEventListener('focusout', (e) => { if (isField(e.target)) { typing = false; syncBar(); } });
+
   /* ---------- Год в подвале ---------- */
   document.getElementById('year').textContent = new Date().getFullYear();
 })();
