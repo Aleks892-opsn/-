@@ -225,12 +225,10 @@
   const quizPhone = document.getElementById('quiz-phone');
   attachPhoneMask(quizPhone);
   let current = 1;
-  let advanceTimer = null;
 
   const picked = (name) => quiz.querySelector(`input[name="${name}"]:checked`);
 
   const showStep = (n, initial = false) => {
-    clearTimeout(advanceTimer);
     current = n;
     quizSteps.forEach((s) => { s.hidden = Number(s.dataset.step) !== n; });
     quizBars.forEach((bar, i) => bar.classList.toggle('on', i < Math.min(n, 3)));
@@ -247,16 +245,14 @@
     if (active) active.focus({ preventScroll: true });
   };
 
-  QUESTIONS.forEach((name, i) => {
+  QUESTIONS.forEach((name) => {
     quiz.querySelectorAll(`input[name="${name}"]`).forEach((input) => {
       input.addEventListener('change', () => {
         const dd = quiz.querySelector(`[data-pick="${name}"]`);
         dd.textContent = input.dataset.text;
         dd.classList.add('is-set');
+        // Переход дальше — только по кнопке «Далее», чтобы можно было передумать
         quizNext.disabled = false;
-        // Выбор ответа сам переводит на следующий шаг
-        clearTimeout(advanceTimer);
-        advanceTimer = setTimeout(() => showStep(i + 2), 350);
       });
     });
   });
