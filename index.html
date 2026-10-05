@@ -335,47 +335,115 @@
       </div>
     </section>
 
-    <!-- ===== 6. Калькулятор ===== -->
+    <!-- ===== 6. Калькулятор: квиз ===== -->
     <section class="section" id="calc">
       <div class="container">
-        <div class="calc">
-          <div class="calc__form">
-            <p class="eyebrow">Калькулятор</p>
-            <h2 class="section__title">Рассчитайте <em>стоимость</em></h2>
+        <div class="quiz" id="quiz">
+          <div class="quiz__main">
+            <p class="eyebrow">Расчёт стоимости за 3 шага</p>
+            <div class="quiz__progress" aria-hidden="true"><i></i><i></i><i></i></div>
+            <p class="quiz__label" id="quiz-label" aria-live="polite">Шаг 1 из 3</p>
 
-            <div class="calc__field">
-              <div class="calc__label-row">
-                <label for="calc-area">Площадь квартиры</label>
-                <output class="calc__area-out" id="calc-area-out" for="calc-area">60 м²</output>
-              </div>
-              <input type="range" id="calc-area" min="20" max="250" step="1" value="60" class="range">
-              <div class="calc__range-hint"><span>20 м²</span><span>250 м²</span></div>
-            </div>
-
-            <fieldset class="calc__field">
-              <legend>Тип ремонта</legend>
-              <div class="calc__types">
-                <label class="chip"><input type="radio" name="calc-type" value="6000"><span>Косметический</span></label>
-                <label class="chip"><input type="radio" name="calc-type" value="14000" checked><span>Капитальный</span></label>
-                <label class="chip"><input type="radio" name="calc-type" value="22000"><span>Дизайнерский</span></label>
-                <label class="chip"><input type="radio" name="calc-type" value="11000"><span>Новостройка</span></label>
+            <fieldset class="quiz__step" data-step="1" tabindex="-1">
+              <legend class="quiz__q">Какой ремонт <em>нужен?</em></legend>
+              <div class="quiz__opts quiz__opts--wide">
+                <label class="quiz__opt"><input type="radio" name="q-type" value="6000" data-text="Косметический"><span><b>Косметический</b><small>без замены инженерии · от 6 000 ₽/м²</small></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-type" value="14000" data-text="Капитальный"><span><b>Капитальный</b><small>с заменой электрики и труб · от 14 000 ₽/м²</small></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-type" value="22000" data-text="Дизайнерский"><span><b>Дизайнерский</b><small>с дизайн-проектом · от 22 000 ₽/м²</small></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-type" value="11000" data-text="Новостройка"><span><b>Новостройка</b><small>из бетона или white box · от 11 000 ₽/м²</small></span></label>
               </div>
             </fieldset>
+
+            <fieldset class="quiz__step" data-step="2" tabindex="-1" hidden>
+              <legend class="quiz__q">Какая площадь <em>квартиры?</em></legend>
+              <div class="quiz__opts">
+                <label class="quiz__opt"><input type="radio" name="q-area" value="20-40" data-text="до 40 м²"><span><b>до 40 м²</b></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-area" value="40-60" data-text="40–60 м²"><span><b>40–60 м²</b></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-area" value="60-80" data-text="60–80 м²"><span><b>60–80 м²</b></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-area" value="80-100" data-text="80–100 м²"><span><b>80–100 м²</b></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-area" value="100-150" data-text="100–150 м²"><span><b>100–150 м²</b></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-area" value="150-" data-text="больше 150 м²"><span><b>больше 150 м²</b></span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="quiz__step" data-step="3" tabindex="-1" hidden>
+              <legend class="quiz__q">Когда планируете <em>начать?</em></legend>
+              <div class="quiz__opts">
+                <label class="quiz__opt"><input type="radio" name="q-start" value="Как можно скорее" data-text="Как можно скорее"><span><b>Как можно скорее</b></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-start" value="В течение месяца" data-text="В течение месяца"><span><b>В течение месяца</b></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-start" value="Через 2–3 месяца" data-text="Через 2–3 месяца"><span><b>Через 2–3 месяца</b></span></label>
+                <label class="quiz__opt"><input type="radio" name="q-start" value="Пока выбираю" data-text="Пока выбираю"><span><b>Пока выбираю</b></span></label>
+              </div>
+            </fieldset>
+
+            <form class="quiz__step quiz__contact" data-step="4" id="quiz-form" tabindex="-1" novalidate hidden>
+              <h3 class="quiz__q">Куда прислать <em>расчёт?</em></h3>
+              <p class="quiz__hint">Покажем стоимость сразу, а подробную смету пришлём в мессенджер.</p>
+              <div class="form__field">
+                <label for="quiz-name">Ваше имя</label>
+                <input id="quiz-name" name="name" type="text" autocomplete="name" placeholder="Иван" required>
+                <span class="form__error" data-for="quiz-name"></span>
+              </div>
+              <div class="form__field">
+                <label for="quiz-phone">Телефон</label>
+                <input id="quiz-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__" required>
+                <span class="form__error" data-for="quiz-phone"></span>
+              </div>
+              <fieldset class="quiz__msg">
+                <legend>Удобнее получить в</legend>
+                <label class="quiz__chip"><input type="radio" name="q-msg" value="WhatsApp" checked><span>WhatsApp</span></label>
+                <label class="quiz__chip"><input type="radio" name="q-msg" value="Telegram"><span>Telegram</span></label>
+                <label class="quiz__chip"><input type="radio" name="q-msg" value="звонок"><span>Звонок</span></label>
+              </fieldset>
+              <label class="checkbox">
+                <input type="checkbox" id="quiz-consent" name="consent" required>
+                <span class="checkbox__box" aria-hidden="true"></span>
+                <span class="checkbox__text">
+                  Я даю согласие на обработку персональных данных в соответствии с Федеральным законом
+                  № 152-ФЗ «О персональных данных» и принимаю условия
+                  <a href="privacy.html" target="_blank" rel="noopener">политики конфиденциальности</a>
+                </span>
+              </label>
+              <span class="form__error" data-for="quiz-consent"></span>
+              <button type="submit" class="btn btn--primary btn--block">
+                Показать расчёт
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </button>
+            </form>
+
+            <div class="quiz__step quiz__result" data-step="5" tabindex="-1" hidden>
+              <h3 class="quiz__q">Предварительный <em>расчёт</em></h3>
+              <p class="quiz__price" id="quiz-price">—</p>
+              <dl class="quiz__rows" id="quiz-rows"></dl>
+              <p class="quiz__note" id="quiz-note"></p>
+              <div class="quiz__nav">
+                <button type="button" class="btn btn--outline" id="quiz-restart">Пройти заново</button>
+                <a href="#lead" class="btn btn--primary">Вызвать замерщика</a>
+              </div>
+            </div>
+
+            <div class="quiz__nav" id="quiz-nav">
+              <button type="button" class="btn btn--outline" id="quiz-back">Назад</button>
+              <button type="button" class="btn btn--primary" id="quiz-next" disabled>
+                Далее
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </button>
+            </div>
           </div>
 
-          <div class="calc__result" aria-live="polite">
-            <p class="calc__result-label">Примерная стоимость работ</p>
-            <p class="calc__price"><span id="calc-price">840 000</span>&nbsp;₽</p>
-            <dl class="calc__rows">
-              <div><dt>Ставка</dt><dd><span id="calc-per">14 000</span> ₽/м²</dd></div>
-              <div><dt>Срок</dt><dd>от <span id="calc-days">50</span> дней</dd></div>
+          <aside class="quiz__side">
+            <p class="quiz__side-title">Уже выбрано</p>
+            <dl class="quiz__picked">
+              <div><dt>Ремонт</dt><dd data-pick="q-type">—</dd></div>
+              <div><dt>Площадь</dt><dd data-pick="q-area">—</dd></div>
+              <div><dt>Старт</dt><dd data-pick="q-start">—</dd></div>
             </dl>
-            <p class="calc__note">Расчёт ориентировочный и не является офертой. Точную смету зафиксируем в договоре после бесплатного замера.</p>
-            <a href="#lead" class="btn btn--primary btn--block" id="calc-cta">
-              Получить точную смету
-              <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
-            </a>
-          </div>
+            <ul class="quiz__perks">
+              <li><svg class="icon" aria-hidden="true"><use href="#i-ruler"/></svg>Бесплатный выезд замерщика</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-doc"/></svg>Подробная смета в мессенджер</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>Цена фиксируется в договоре</li>
+            </ul>
+          </aside>
         </div>
       </div>
     </section>

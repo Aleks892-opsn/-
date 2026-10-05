@@ -172,60 +172,6 @@
     updateStepsLine();
   }
 
-  /* ---------- Калькулятор ---------- */
-  const DAYS = { 6000: 25, 14000: 50, 22000: 60, 11000: 45 };
-  const area = document.getElementById('calc-area');
-  const areaOut = document.getElementById('calc-area-out');
-  const priceEl = document.getElementById('calc-price');
-  const perEl = document.getElementById('calc-per');
-  const daysEl = document.getElementById('calc-days');
-  const typeInputs = document.querySelectorAll('input[name="calc-type"]');
-  const calcCta = document.getElementById('calc-cta');
-  const fmt = new Intl.NumberFormat('ru-RU');
-
-  let shownPrice = 0;
-  let rafId = null;
-
-  const animatePrice = (target) => {
-    cancelAnimationFrame(rafId);
-    const from = shownPrice;
-    const start = performance.now();
-    const dur = 450;
-    const step = (now) => {
-      const t = Math.min((now - start) / dur, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      shownPrice = Math.round(from + (target - from) * eased);
-      priceEl.textContent = fmt.format(shownPrice);
-      if (t < 1) rafId = requestAnimationFrame(step);
-    };
-    rafId = requestAnimationFrame(step);
-  };
-
-  const updateCalc = () => {
-    const a = Number(area.value);
-    const rate = Number(document.querySelector('input[name="calc-type"]:checked').value);
-    // Для больших площадей срок растёт пропорционально
-    const days = Math.round(DAYS[rate] * Math.max(1, a / 80));
-
-    areaOut.textContent = a + ' м²';
-    perEl.textContent = fmt.format(rate);
-    daysEl.textContent = days;
-
-    const fill = ((a - area.min) / (area.max - area.min)) * 100;
-    area.style.setProperty('--fill', fill + '%');
-
-    animatePrice(a * rate);
-  };
-
-  area.addEventListener('input', updateCalc);
-  typeInputs.forEach((i) => i.addEventListener('change', updateCalc));
-  updateCalc();
-
-  // Перенос площади из калькулятора в форму заявки
-  calcCta.addEventListener('click', () => {
-    document.getElementById('lead-area').value = area.value;
-  });
-
   /* ---------- Маска телефона ---------- */
   const phone = document.getElementById('lead-phone');
 
@@ -249,16 +195,132 @@
     return out;
   };
 
-  phone.addEventListener('input', () => {
-    phone.value = formatPhone(phone.value);
+  const attachPhoneMask = (input) => {
+    input.addEventListener('input', () => {
+      input.value = formatPhone(input.value);
+    });
+    input.addEventListener('focus', () => {
+      if (!input.value) input.value = '+7 (';
+      // Ставим курсор в конец, иначе первая цифра попадёт перед «+7»
+      requestAnimationFrame(() => input.setSelectionRange(input.value.length, input.value.length));
+    });
+    input.addEventListener('blur', () => {
+      if (input.value.replace(/\D/g, '').length <= 1) input.value = '';
+    });
+  };
+  attachPhoneMask(phone);
+
+  /* ---------- Квиз: расчёт стоимости за 3 шага ---------- */
+  const quiz = document.getElementById('quiz');
+  const DAYS = { 6000: 25, 14000: 50, 22000: 60, 11000: 45 };
+  const fmt = new Intl.NumberFormat('ru-RU');
+  const QUESTIONS = ['q-type', 'q-area', 'q-start'];
+  const quizSteps = [...quiz.querySelectorAll('.quiz__step')];
+  const quizLabel = document.getElementById('quiz-label');
+  const quizBars = quiz.querySelectorAll('.quiz__progress i');
+  const quizNav = document.getElementById('quiz-nav');
+  const quizBack = document.getElementById('quiz-back');
+  const quizNext = document.getElementById('quiz-next');
+  const quizForm = document.getElementById('quiz-form');
+  const quizPhone = document.getElementById('quiz-phone');
+  attachPhoneMask(quizPhone);
+  let current = 1;
+  let advanceTimer = null;
+
+  const picked = (name) => quiz.querySelector(`input[name="${name}"]:checked`);
+
+  const showStep = (n, initial = false) => {
+    clearTimeout(advanceTimer);
+    current = n;
+    quizSteps.forEach((s) => { s.hidden = Number(s.dataset.step) !== n; });
+    quizBars.forEach((bar, i) => bar.classList.toggle('on', i < Math.min(n, 3)));
+    quizLabel.textContent = n <= 3 ? `Шаг ${n} из 3` : n === 4 ? 'Последний шаг' : 'Готово';
+    quizNav.hidden = n === 5;
+    quizBack.hidden = n === 1;
+    quizNext.hidden = n === 4;
+    quizNext.disabled = n <= 3 && !picked(QUESTIONS[n - 1]);
+    if (initial) return;
+    // На телефоне возвращаем начало квиза в зону видимости
+    const top = quiz.getBoundingClientRect().top;
+    if (top < 0) quiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const active = quizSteps.find((s) => !s.hidden);
+    if (active) active.focus({ preventScroll: true });
+  };
+
+  QUESTIONS.forEach((name, i) => {
+    quiz.querySelectorAll(`input[name="${name}"]`).forEach((input) => {
+      input.addEventListener('change', () => {
+        const dd = quiz.querySelector(`[data-pick="${name}"]`);
+        dd.textContent = input.dataset.text;
+        dd.classList.add('is-set');
+        quizNext.disabled = false;
+        // Выбор ответа сам переводит на следующий шаг
+        clearTimeout(advanceTimer);
+        advanceTimer = setTimeout(() => showStep(i + 2), 350);
+      });
+    });
   });
-  phone.addEventListener('focus', () => {
-    if (!phone.value) phone.value = '+7 (';
-    // Ставим курсор в конец, иначе первая цифра попадёт перед «+7»
-    requestAnimationFrame(() => phone.setSelectionRange(phone.value.length, phone.value.length));
+
+  quizNext.addEventListener('click', () => { if (current < 4) showStep(current + 1); });
+  showStep(1, true);
+  quizBack.addEventListener('click', () => { if (current > 1) showStep(current - 1); });
+  document.getElementById('quiz-restart').addEventListener('click', () => {
+    quiz.querySelectorAll('input[type="radio"]').forEach((r) => { if (r.name !== 'q-msg') r.checked = false; });
+    quiz.querySelectorAll('[data-pick]').forEach((dd) => { dd.textContent = '—'; dd.classList.remove('is-set'); });
+    showStep(1);
   });
-  phone.addEventListener('blur', () => {
-    if (phone.value.replace(/\D/g, '').length <= 1) phone.value = '';
+
+  const quizError = (input, msg) => {
+    const err = quizForm.querySelector(`.form__error[data-for="${input.id}"]`);
+    input.classList.toggle('is-invalid', Boolean(msg));
+    input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    if (err) err.textContent = msg || '';
+  };
+
+  const showResult = () => {
+    const rate = Number(picked('q-type').value);
+    const [min, max] = picked('q-area').value.split('-').map((v) => (v ? Number(v) : null));
+    const dayFor = (a) => Math.round(DAYS[rate] * Math.max(1, a / 80));
+    document.getElementById('quiz-price').innerHTML = max
+      ? `${fmt.format(min * rate)} – ${fmt.format(max * rate)}&nbsp;₽<small>в зависимости от точной площади</small>`
+      : `от ${fmt.format(min * rate)}&nbsp;₽<small>для площади от ${min} м²</small>`;
+    const rows = [
+      ['Ремонт', picked('q-type').dataset.text],
+      ['Площадь', picked('q-area').dataset.text],
+      ['Ставка', `от ${fmt.format(rate)} ₽/м²`],
+      ['Срок', `от ${dayFor(min)} дней`],
+      ['Старт', picked('q-start').dataset.text],
+    ];
+    document.getElementById('quiz-rows').innerHTML = rows
+      .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+    const msg = picked('q-msg').value;
+    document.getElementById('quiz-note').textContent = msg === 'звонок'
+      ? 'Менеджер перезвонит в течение 15 минут в рабочее время, уточнит детали и назначит бесплатный замер.'
+      : `Подробную смету пришлём в ${msg} в течение 15 минут в рабочее время. Точную цену зафиксируем в договоре после бесплатного замера.`;
+    showStep(5);
+  };
+
+  quizForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('quiz-name');
+    const consent = document.getElementById('quiz-consent');
+    const errors = [
+      [name, name.value.trim().length < 2 ? 'Укажите, как к вам обращаться' : ''],
+      [quizPhone, quizPhone.value.replace(/\D/g, '').length !== 11 ? 'Введите номер телефона полностью' : ''],
+      [consent, consent.checked ? '' : 'Необходимо согласие на обработку персональных данных'],
+    ];
+    errors.forEach(([el, msg]) => quizError(el, msg));
+    const firstBad = errors.find(([, msg]) => msg);
+    if (firstBad) { firstBad[0].focus(); return; }
+    // TODO: отправьте ответы квиза и контакты в CRM вместе с заявкой
+    // fetch('/api/quiz', { method: 'POST', body: new FormData(quizForm) })
+    showResult();
+  });
+  [document.getElementById('quiz-name'), quizPhone].forEach((el) => {
+    el.addEventListener('input', () => { if (el.classList.contains('is-invalid')) quizError(el, ''); });
+  });
+  document.getElementById('quiz-consent').addEventListener('change', (e) => {
+    if (e.target.checked) quizError(e.target, '');
   });
 
   /* ---------- Валидация и отправка формы ---------- */
