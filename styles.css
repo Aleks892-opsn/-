@@ -686,20 +686,29 @@ em { font-style: italic; }
 }
 .dots button[aria-selected="true"]::after { background: var(--gold-500); }
 
-/* ---------- 5. Почему мы — ряд «иконка + текст» ---------- */
+/* ---------- 5. Почему мы — плитки «иконка + текст» ---------- */
+/* Плитки делят строки сетки (subgrid): иконки, заголовки и тексты
+   соседних плиток стоят ровно на одной высоте */
 .features {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
 }
 .feature {
-  padding: var(--space-2) var(--space-6);
-  border-left: var(--hairline);
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  row-gap: var(--space-4);
+  align-content: start;
+  padding: var(--space-6) var(--space-5);
+  background: var(--ink-700);
+  border: var(--hairline);
+  transition: border-color var(--t-fast);
 }
-.feature:first-child { padding-left: 0; border-left: 0; }
+.feature:hover { border-color: var(--line-strong); }
 .feature__icon {
   width: 32px;
   height: 32px;
-  margin-bottom: var(--space-5);
   fill: none;
   stroke: var(--gold-500);
   stroke-width: 1.25;
@@ -709,14 +718,20 @@ em { font-style: italic; }
 }
 .feature:hover .feature__icon { transform: translateY(-3px); }
 .feature h3 {
-  margin-bottom: var(--space-3);
+  align-self: start;
   font-size: var(--fs-label);
   font-weight: 600;
   line-height: 1.45;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
-.feature p { color: var(--sand-300); font-size: var(--fs-small); line-height: 1.55; }
+.feature p { align-self: start; color: var(--sand-300); font-size: var(--fs-small); line-height: 1.55; }
+
+/* Браузеры без subgrid: заголовок всегда занимает две строки */
+@supports not (grid-template-rows: subgrid) {
+  .feature { display: flex; flex-direction: column; gap: var(--space-4); }
+  .feature h3 { min-height: 2.9em; }
+}
 
 /* ---------- 6. Калькулятор ---------- */
 .calc {
@@ -1155,8 +1170,7 @@ a.footer__line:hover { color: var(--gold-500); }
 
   .services { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-7); }
 
-  .features { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-7); }
-  .feature:nth-child(3) { padding-left: 0; border-left: 0; }
+  .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .steps { grid-template-columns: repeat(3, 1fr); row-gap: var(--space-7); }
   .steps::before { display: none; }
@@ -1281,9 +1295,11 @@ a.footer__line:hover { color: var(--gold-500); }
 
   .services { grid-template-columns: 1fr; }
 
-  .features { grid-template-columns: 1fr; row-gap: 0; }
-  .feature { padding: var(--space-6) 0; border-left: 0; border-top: var(--hairline); }
-  .feature:first-child { padding-top: 0; border-top: 0; }
+  .features { gap: 10px; }
+  .feature { row-gap: var(--space-3); padding: 18px 14px; }
+  .feature__icon { width: 28px; height: 28px; }
+  .feature h3 { font-size: 12px; letter-spacing: 0.1em; }
+  .feature p { font-size: 13px; line-height: 1.45; }
 
   .steps { grid-template-columns: 1fr; row-gap: var(--space-6); padding-left: var(--space-1); }
   .steps::before { display: block; left: 4px; right: auto; top: 0; bottom: 0; width: 1px; height: auto; }
@@ -1306,6 +1322,10 @@ a.footer__line:hover { color: var(--gold-500); }
 
   .footer__grid { grid-template-columns: 1fr; gap: var(--space-6); }
   .footer__bottom { flex-direction: column; }
+}
+
+@media (max-width: 360px) {
+  .feature h3 { font-size: 11px; letter-spacing: 0.06em; }
 }
 
 @media (prefers-reduced-motion: reduce) {
