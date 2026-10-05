@@ -1203,7 +1203,7 @@ em { font-style: italic; }
 }
 .footer__msg a:hover { background: var(--gold-500); border-color: var(--gold-500); color: var(--ink-900); }
 
-/* Панель связи внизу экрана (только телефон и планшет) */
+/* Кнопки связи в конце страницы (только телефон и планшет) */
 .action-bar { display: none; }
 
 .footer__bottom {
@@ -1375,34 +1375,22 @@ em { font-style: italic; }
     background: var(--ink-900);
   }
 
-  /* Подвал: короткий, связь — в панели внизу экрана */
-  .footer { padding-top: var(--space-7); padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  /* Подвал: короткий, кнопки связи — в самом конце страницы */
+  .footer { padding-top: var(--space-7); padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px)); }
   .footer__main { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
   .footer__msg { display: none; }
+  /* Адрес, часы, телефон и почта — каждый на своей строке */
+  .footer__info,
+  .footer__line { display: flex; flex-direction: column; gap: 6px; }
   .footer__sep { display: none; }
-  .footer__hours { display: block; }
   .footer__bottom { margin-top: var(--space-6); }
 
   .action-bar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 90;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 52px 52px;
     gap: var(--space-2);
-    padding: 10px var(--pad-x) calc(10px + env(safe-area-inset-bottom, 0px));
-    background: rgba(14, 13, 12, 0.94);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: var(--hairline);
-    transform: translateY(100%);
-    visibility: hidden;
-    transition: transform 400ms var(--ease), visibility 400ms var(--ease);
+    margin-top: var(--space-5);
   }
-  .action-bar.is-visible { transform: none; visibility: visible; }
-  body.menu-open .action-bar { transform: translateY(100%); visibility: hidden; }
   .action-bar a {
     display: flex;
     align-items: center;
