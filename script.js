@@ -136,6 +136,7 @@
         el.classList.add('is-in');
         revealIO.unobserve(el);
         el.querySelectorAll('.count').forEach((c) => setTimeout(() => countUp(c), delay + 150));
+        if (el.classList.contains('step')) el.parentElement.classList.add('is-line');
       });
     };
     const revealIO = new IntersectionObserver((entries) => {
@@ -153,6 +154,22 @@
         return !el.classList.contains('is-in') && r.height > 0 && shown / r.height >= 0.2;
       }));
     });
+  }
+
+  /* ---------- Этапы: линия на телефоне следует за прокруткой ---------- */
+  const stepsList = document.getElementById('steps-list');
+  if (animOn && stepsList) {
+    let ticking = false;
+    const updateStepsLine = () => {
+      ticking = false;
+      const r = stepsList.getBoundingClientRect();
+      const progress = Math.min(1, Math.max(0, (window.innerHeight * 0.8 - r.top) / r.height));
+      stepsList.style.setProperty('--steps-progress', progress.toFixed(3));
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(updateStepsLine); }
+    }, { passive: true });
+    updateStepsLine();
   }
 
   /* ---------- Калькулятор ---------- */

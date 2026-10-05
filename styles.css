@@ -1198,6 +1198,36 @@ a.footer__line:hover { color: var(--gold-500); }
 .js-anim .service.is-in h3,
 .js-anim .service.is-in > p { opacity: 1; transform: none; }
 
+/* Этапы: линия прорисовывается, затем по очереди точка, номер и текст этапа.
+   Используем отдельные свойства translate/scale, чтобы не мешать ховеру */
+.js-anim .steps::before {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1400ms var(--ease);
+}
+.js-anim .steps.is-line::before { transform: scaleX(1); }
+
+.js-anim .step[data-reveal] { opacity: 1; transform: none; }
+.js-anim .step__dot { scale: 0; transition: scale 500ms var(--ease), background-color var(--t-fast), transform var(--t-fast); transition-delay: var(--rv-delay, 0ms); }
+.js-anim .step__num,
+.js-anim .step h3,
+.js-anim .step p,
+.js-anim .step__time {
+  opacity: 0;
+  translate: 0 16px;
+  transition: opacity 700ms var(--ease), translate 700ms var(--ease);
+}
+.js-anim .step__num { translate: -12px 0; transition-delay: calc(var(--rv-delay, 0ms) + 100ms); }
+.js-anim .step h3 { transition-delay: calc(var(--rv-delay, 0ms) + 220ms); }
+.js-anim .step p { transition-delay: calc(var(--rv-delay, 0ms) + 320ms); }
+.js-anim .step__time { transition-delay: calc(var(--rv-delay, 0ms) + 420ms); }
+
+.js-anim .step.is-in .step__dot { scale: 1; }
+.js-anim .step.is-in .step__num,
+.js-anim .step.is-in h3,
+.js-anim .step.is-in p,
+.js-anim .step.is-in .step__time { opacity: 1; translate: 0 0; }
+
 /* =========================================================
    Адаптив: 1200 / 900 / 600
    ========================================================= */
@@ -1362,6 +1392,16 @@ a.footer__line:hover { color: var(--gold-500); }
 
   .footer__grid { grid-template-columns: 1fr; gap: var(--space-6); }
   .footer__bottom { flex-direction: column; }
+}
+
+@media (max-width: 600px) {
+  /* На телефоне линия этапов тянется вниз вслед за прокруткой */
+  .js-anim .steps::before,
+  .js-anim .steps.is-line::before {
+    transform: scaleY(var(--steps-progress, 0));
+    transform-origin: center top;
+    transition: none;
+  }
 }
 
 @media (max-width: 360px) {
