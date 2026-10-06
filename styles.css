@@ -847,7 +847,16 @@ em { font-style: italic; }
   margin-bottom: var(--space-5);
   transition: filter var(--t-slow);
 }
-.service:hover .ph--card { filter: brightness(1.2); }
+.service:hover .ph--card { filter: brightness(1.08); }
+.svc-photo { position: relative; overflow: hidden; background: var(--ink-700); }
+.svc-photo picture { display: block; height: 100%; }
+.svc-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--t-slow);
+}
+.service:hover .svc-photo img { transform: scale(1.04); }
 .service h3 {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
