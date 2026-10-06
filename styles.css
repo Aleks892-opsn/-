@@ -261,6 +261,20 @@ em { font-style: italic; }
   border-bottom: 1px solid transparent;
   transition: background-color var(--t-fast), border-color var(--t-fast), height var(--t-fast);
 }
+/* Пока шапка лежит на фото первого экрана — мягкое затемнение сверху, чтобы логотип читался */
+.header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 150%;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(14, 13, 12, 0.75) 0%, rgba(14, 13, 12, 0.35) 60%, transparent 100%);
+  pointer-events: none;
+  transition: opacity var(--t-fast);
+}
+.header.is-scrolled::before { opacity: 0; }
 .header.is-scrolled {
   --header-h: 64px;
   background: rgba(14, 13, 12, 0.92);
@@ -334,6 +348,13 @@ em { font-style: italic; }
 .nav__phone-mobile { display: none; }
 
 .header__actions { display: flex; align-items: center; gap: 20px; }
+/* Кнопки звонка и чата — тёмное стекло, чтобы не терялись на фото */
+.header__call,
+.header__support {
+  background: rgba(14, 13, 12, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
 /* Кнопка чата с менеджером — рядом со звонком */
 .header__support {
   position: relative;
@@ -1824,7 +1845,7 @@ em { font-style: italic; }
   .logo__text b { font-size: 12px; letter-spacing: 0.12em; }
   .logo__text small { display: none; }
   .header__call span { display: none; }
-  .header__call { width: 44px; padding: 0; }
+  .header__call { width: 40px; padding: 0; }
 
   .hero__actions .btn { width: 100%; }
   .hero__facts li { padding-inline: var(--space-4) 0; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
@@ -1867,6 +1888,40 @@ em { font-style: italic; }
     transform-origin: center top;
     transition: none;
   }
+}
+
+@media (max-width: 1100px) {
+  /* Вариант «капсула»: звонок, чат и меню в одной тёмной стеклянной капсуле */
+  .header__actions {
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid rgba(239, 232, 222, 0.15);
+    border-radius: var(--radius-pill);
+    background: rgba(14, 13, 12, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .header__actions .header__call,
+  .header__actions .header__support {
+    height: 40px;
+    border-color: transparent;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .header__actions .header__support { width: 40px; }
+  .header__actions .header__support:hover,
+  .header__actions .header__support[aria-expanded="true"] { background: var(--gold-500); }
+  .header__support-dot { top: 4px; right: 4px; border-color: rgba(14, 13, 12, 0.9); }
+  .burger { width: 40px; height: 40px; }
+  .burger span { left: 11px; right: 11px; }
+  .burger span:nth-child(1) { top: 13px; }
+  .burger span:nth-child(2) { top: 20px; }
+  .burger span:nth-child(3) { top: 27px; }
+  .burger[aria-expanded="true"] span:nth-child(1),
+  .burger[aria-expanded="true"] span:nth-child(3) { top: 20px; }
+  /* Меню открыто — шапка на сплошном фоне, затемнение не нужно */
+  body.menu-open .header::before { opacity: 0; }
 }
 
 @media (max-width: 380px) {
