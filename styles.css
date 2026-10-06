@@ -461,16 +461,23 @@ em { font-style: italic; }
   padding: var(--space-6);
   padding-bottom: 150px;
 }
+.hero__media { margin: 0; overflow: hidden; background: var(--ink-800); }
+.hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 55%;
+}
 .hero__media::before {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: linear-gradient(90deg, var(--ink-900) 0%, rgba(14, 13, 12, 0.6) 25%, transparent 55%);
   pointer-events: none;
 }
-.hero__media .ph__icon,
-.hero__media .ph__label { position: relative; text-align: right; }
-.hero__media .ph__label { padding: 0; }
 
 .hero__inner { position: relative; }
 .hero__content { max-width: 700px; }
@@ -555,14 +562,7 @@ em { font-style: italic; }
   opacity: 0;
   transition: opacity 700ms var(--ease) 1000ms;
 }
-.js-anim .hero__media .ph__icon,
-.js-anim .hero__media .ph__label {
-  opacity: 0;
-  transition: opacity 600ms var(--ease) 1200ms;
-}
-.js-anim .hero.is-play .hero__media::before,
-.js-anim .hero.is-play .hero__media .ph__icon,
-.js-anim .hero.is-play .hero__media .ph__label { opacity: 1; }
+.js-anim .hero.is-play .hero__media::before { opacity: 1; }
 .js-anim .hero__word {
   display: block;
   position: absolute;
@@ -579,13 +579,13 @@ em { font-style: italic; }
   text-align: center;
   white-space: nowrap;
   color: var(--sand-100);
-  mix-blend-mode: difference;
+  text-shadow: 0 4px 40px rgba(14, 13, 12, 0.55);
   pointer-events: none;
   transition: transform 1200ms cubic-bezier(0.65, 0, 0.35, 1) 250ms, opacity 700ms var(--ease) 650ms;
   will-change: transform, opacity;
 }
 .js-anim .hero.is-play .hero__word { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
-.js-anim .hero__word span { display: block; font-style: italic; color: var(--gold-500); mix-blend-mode: normal; }
+.js-anim .hero__word span { display: block; font-style: italic; color: var(--gold-400); }
 .js-anim .hero__inner { z-index: 2; pointer-events: none; }
 .js-anim .hero.is-final .hero__inner { pointer-events: auto; }
 /* Оффер: строки заголовка и остальное выезжают по очереди */
@@ -1796,21 +1796,8 @@ em { font-style: italic; }
   .hero__media::before {
     background: linear-gradient(180deg, rgba(14, 13, 12, 0.55) 0%, rgba(14, 13, 12, 0.88) 55%, var(--ink-900) 100%);
   }
-  .hero__media .ph__icon,
-  .hero__media .ph__label { display: none; }
-  .hero__media::after {
-    content: "Фото интерьера фоном · 4:5 для телефона";
-    position: absolute;
-    top: calc(var(--header-h) + var(--space-3));
-    right: var(--pad-x);
-    color: var(--sand-500);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-  }
   .hero__facts { grid-template-columns: repeat(2, 1fr); }
   .js-anim .hero__media::before { background: linear-gradient(180deg, rgba(14, 13, 12, 0.35) 0%, rgba(14, 13, 12, 0.85) 55%, var(--ink-900) 100%); }
-  .js-anim .hero__media::after { opacity: 0; transition: opacity 600ms var(--ease) 1200ms; }
-  .js-anim .hero.is-play .hero__media::after { opacity: 1; }
   .stack { --stack-top: 10vh; }
   .ba { aspect-ratio: 4 / 5; }
   .ba-gallery, .ba-gallery + .ba__meta { --ba-ratio: 4 / 5; }
