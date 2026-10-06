@@ -90,39 +90,48 @@
 
     <!-- ===== 1. Первый экран ===== -->
     <section class="hero" id="top">
-      <figure class="hero__media ph">
-        <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-        <figcaption class="ph__label">
-          <b>Фото интерьера</b>
-          Гостиная или кухня-гостиная в тёплом вечернем свете, объект в правой части кадра. 16:9, от 2400×1350 px
-        </figcaption>
-      </figure>
+      <div class="hero__stage">
+        <figure class="hero__media ph">
+          <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
+          <figcaption class="ph__label">
+            <b>Фото интерьера</b>
+            Гостиная или кухня-гостиная в тёплом вечернем свете, объект в правой части кадра. 16:9, от 2400×1350 px
+          </figcaption>
+        </figure>
 
-      <div class="container hero__inner">
-        <div class="hero__content">
-          <p class="eyebrow">Студия ремонта квартир</p>
-          <h1 class="hero__title">
-            <span class="line">Ремонт под ключ</span>
-            <span class="line">с дизайн-проектом</span>
-            <span class="line"><em>за 60 дней</em></span>
-          </h1>
-          <span class="stroke" aria-hidden="true"></span>
-          <p class="hero__lead">
-            Берём на себя всё: от замера и 3D-визуализации до уборки после ремонта.
-            Цену и сроки фиксируем в договоре.
-          </p>
-          <div class="hero__actions">
-            <a href="#calc" class="btn btn--primary">
-              Рассчитать стоимость
-              <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
-            </a>
-            <a href="#portfolio" class="round-link">
-              <span class="round-link__icon"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></span>
-              <span class="round-link__text"><b>Смотреть работы</b>6 реализованных проектов</span>
-            </a>
+        <p class="hero__word" aria-hidden="true">REMONT<span>design</span></p>
+
+        <div class="container hero__inner">
+          <div class="hero__content">
+            <p class="eyebrow">Студия ремонта квартир</p>
+            <h1 class="hero__title">
+              <span class="line">Ремонт под ключ</span>
+              <span class="line">с дизайн-проектом</span>
+              <span class="line"><em>за 60 дней</em></span>
+            </h1>
+            <span class="stroke" aria-hidden="true"></span>
+            <p class="hero__lead">
+              Берём на себя всё: от замера и 3D-визуализации до уборки после ремонта.
+              Цену и сроки фиксируем в договоре.
+            </p>
+            <div class="hero__actions">
+              <a href="#calc" class="btn btn--primary">
+                Рассчитать стоимость
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </a>
+              <a href="#portfolio" class="round-link">
+                <span class="round-link__icon"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+                <span class="round-link__text"><b>Смотреть работы</b>6 реализованных проектов</span>
+              </a>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
 
+    <!-- Цифры студии -->
+    <section class="facts">
+      <div class="container">
         <ul class="hero__facts" data-reveal-group>
           <li data-reveal><strong><span class="count" data-to="12">12</span></strong><span>лет на рынке<br>ремонта</span></li>
           <li data-reveal><strong><span class="count" data-to="740">740</span>+</strong><span>сданных<br>квартир</span></li>
@@ -246,6 +255,20 @@
           </div>
         </div>
 
+        <!-- Было / стало: тяните ползунок -->
+        <div class="ba" id="ba" tabindex="0" role="slider" aria-label="Сравнение квартиры до и после ремонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <div class="ba__before">
+            <span class="ba__cap">Фото «до»: голый бетон или старый ремонт</span>
+          </div>
+          <div class="ba__after ph">
+            <span class="ba__cap">Фото «после» с того же ракурса</span>
+          </div>
+          <span class="ba__tag ba__tag--l">Было</span>
+          <span class="ba__tag ba__tag--r">Стало</span>
+          <div class="ba__handle"><span class="ba__knob" aria-hidden="true">⟷</span></div>
+        </div>
+        <p class="ba__meta"><span>ЖК «Символ» · 78&nbsp;м² · дизайнерский ремонт</span><span>58 дней</span></p>
+
         <div class="carousel">
           <ul class="carousel__track" id="pf-track">
             <li class="project">
@@ -309,26 +332,38 @@
           <h2 class="section__title">Почему <em>мы?</em></h2>
         </div>
 
-        <div class="features">
-          <article class="feature">
-            <svg class="feature__icon" aria-hidden="true"><use href="#i-doc"/></svg>
-            <h3>Фиксированная<br>смета</h3>
-            <p>Цена не вырастет в процессе работ.</p>
+        <div class="stack" id="stack">
+          <article class="stack-card" style="--i:0">
+            <span class="stack-card__idx">01 / 04</span>
+            <p class="stack-card__big">0 ₽<small>доплат сверх сметы</small></p>
+            <div class="stack-card__text">
+              <h3>Фиксированная смета</h3>
+              <p>Цена прописана в договоре и не вырастет в процессе работ.</p>
+            </div>
           </article>
-          <article class="feature">
-            <svg class="feature__icon" aria-hidden="true"><use href="#i-shield"/></svg>
-            <h3>Гарантия<br>3 года</h3>
-            <p>Официальная гарантия на все работы.</p>
+          <article class="stack-card" style="--i:1">
+            <span class="stack-card__idx">02 / 04</span>
+            <p class="stack-card__big">3 года<small>гарантии по договору</small></p>
+            <div class="stack-card__text">
+              <h3>Гарантия</h3>
+              <p>Официальная гарантия на все работы. Устраняем за наш счёт.</p>
+            </div>
           </article>
-          <article class="feature">
-            <svg class="feature__icon" aria-hidden="true"><use href="#i-stages"/></svg>
-            <h3>Оплата<br>по этапам</h3>
-            <p>Платите только за то, что уже сделано и принято вами.</p>
+          <article class="stack-card" style="--i:2">
+            <span class="stack-card__idx">03 / 04</span>
+            <p class="stack-card__big">5 этапов<small>оплата по факту</small></p>
+            <div class="stack-card__text">
+              <h3>Оплата по этапам</h3>
+              <p>Платите только за то, что уже сделано и принято вами.</p>
+            </div>
           </article>
-          <article class="feature">
-            <svg class="feature__icon" aria-hidden="true"><use href="#i-camera"/></svg>
-            <h3>Прораб<br>и фотоотчёт</h3>
-            <p>Персональный прораб и ежедневный фотоотчёт в мессенджере.</p>
+          <article class="stack-card" style="--i:3">
+            <span class="stack-card__idx">04 / 04</span>
+            <p class="stack-card__big">1 прораб<small>и фото каждый день</small></p>
+            <div class="stack-card__text">
+              <h3>Свой прораб</h3>
+              <p>Персональный прораб на связи и ежедневный фотоотчёт в мессенджере.</p>
+            </div>
           </article>
         </div>
       </div>

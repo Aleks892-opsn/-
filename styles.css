@@ -502,6 +502,155 @@ em { font-style: italic; }
 }
 .hero__facts li > span { font-size: 13px; line-height: 1.4; color: var(--sand-300); }
 
+/* Цифры студии — отдельная полоса сразу под первым экраном */
+.facts { padding-bottom: var(--space-7); }
+.facts .hero__facts { margin-top: 0; }
+
+/* Первый экран-сцена: окно с фото растёт до полного экрана, буквы улетают,
+   появляется оффер. Включается только с классом js-anim (см. <head>),
+   иначе первый экран выглядит как обычно */
+.hero__word { display: none; }
+.js-anim .hero {
+  display: block;
+  height: 260vh;
+  min-height: 0;
+  padding: 0;
+  overflow: visible;
+}
+.js-anim .hero__stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100vh;
+  height: 100svh;
+  padding-top: var(--header-h);
+  padding-bottom: var(--space-8);
+  overflow: hidden;
+}
+.js-anim .hero__media {
+  width: 100%;
+  clip-path: inset(var(--ci, 32%) var(--cx, 30%) round var(--cr, 4px));
+  will-change: clip-path;
+}
+.js-anim .hero__media::before {
+  background:
+    linear-gradient(90deg, rgba(14, 13, 12, 0.9) 0%, rgba(14, 13, 12, 0.45) 45%, transparent 75%),
+    linear-gradient(0deg, rgba(14, 13, 12, 0.85) 0%, transparent 45%);
+  opacity: var(--fo, 0);
+}
+.js-anim .hero__media .ph__icon,
+.js-anim .hero__media .ph__label { opacity: var(--fo, 0); }
+.js-anim .hero__word {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  margin: 0;
+  transform: translate(-50%, -50%) scale(var(--ws, 1));
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(56px, 15vw, 220px);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--sand-100);
+  mix-blend-mode: difference;
+  opacity: var(--wo, 1);
+  pointer-events: none;
+}
+.js-anim .hero__word span { display: block; font-style: italic; color: var(--gold-500); mix-blend-mode: normal; }
+.js-anim .hero__inner {
+  z-index: 2;
+  opacity: var(--fo, 0);
+  transform: translateY(calc((1 - var(--fo, 0)) * 30px));
+  pointer-events: none;
+}
+.js-anim .hero.is-final .hero__inner { pointer-events: auto; }
+.js-anim .hero__title .line { animation: none; }
+
+/* ---------- Было / стало ---------- */
+.ba {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-width: 100%;
+  margin-bottom: var(--space-3);
+  overflow: hidden;
+  border: var(--hairline);
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ba:focus-visible { outline: 1px solid var(--gold-500); outline-offset: 4px; }
+.ba__before {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 30% 30%, rgba(255, 255, 255, 0.08), transparent),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .48 0 0 0 0 .45 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #6E6A64 0%, #57534D 62%, #403D38 62.3%, #34312C 100%);
+}
+.ba__after {
+  position: absolute !important;
+  inset: 0;
+  outline: none !important;
+  clip-path: inset(0 0 0 var(--bx, 50%));
+}
+.ba__cap {
+  position: absolute;
+  bottom: var(--space-4);
+  max-width: 40%;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(239, 232, 222, 0.7);
+}
+.ba__before .ba__cap { left: var(--space-4); }
+.ba__after .ba__cap { right: var(--space-4); text-align: right; }
+.ba__tag {
+  position: absolute;
+  top: var(--space-4);
+  padding: 6px 14px;
+  background: rgba(14, 13, 12, 0.75);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+.ba__tag--l { left: var(--space-4); }
+.ba__tag--r { right: var(--space-4); color: var(--gold-500); }
+.ba__handle { position: absolute; top: 0; bottom: 0; left: var(--bx, 50%); width: 0; }
+.ba__handle::before { content: ""; position: absolute; top: 0; bottom: 0; left: -1px; width: 2px; background: var(--gold-500); }
+.ba__knob {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  border-radius: 50%;
+  background: var(--gold-500);
+  color: var(--ink-900);
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform var(--t-fast);
+}
+.ba:hover .ba__knob { transform: scale(1.08); }
+.ba__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  color: var(--sand-300);
+  font-size: var(--fs-small);
+}
+
 /* ---------- Секции ---------- */
 .section { padding-block: var(--section-y); }
 .section--alt { background: var(--ink-800); }
@@ -686,52 +835,62 @@ em { font-style: italic; }
 }
 .dots button[aria-selected="true"]::after { background: var(--gold-500); }
 
-/* ---------- 5. Почему мы — плитки «иконка + текст» ---------- */
-/* Плитки делят строки сетки (subgrid): иконки, заголовки и тексты
-   соседних плиток стоят ровно на одной высоте */
-.features {
+/* ---------- 5. Почему мы — карточки стопкой ---------- */
+/* Каждая карточка липнет к верху чуть ниже предыдущей; следующая наезжает
+   на неё, а предыдущая уходит вглубь (масштаб и яркость задаёт script.js) */
+.stack { --stack-top: calc(var(--header-h) + var(--space-6)); }
+.stack-card {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-.feature {
-  display: grid;
-  grid-row: span 3;
-  grid-template-rows: subgrid;
-  row-gap: var(--space-4);
-  align-content: start;
-  padding: var(--space-6) var(--space-5);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: var(--space-7);
+  min-height: min(56vh, 460px);
+  margin-bottom: var(--space-5);
+  padding: clamp(24px, 4vw, 56px);
   background: var(--ink-700);
-  border: var(--hairline);
-  transition: border-color var(--t-fast);
+  border: 1px solid var(--line-strong);
+  transform-origin: 50% 0;
+  transform: scale(var(--s, 1));
+  filter: brightness(var(--b, 1));
 }
-.feature:hover { border-color: var(--line-strong); }
-.feature__icon {
-  width: 32px;
-  height: 32px;
-  fill: none;
-  stroke: var(--gold-500);
-  stroke-width: 1.25;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: transform var(--t-fast);
+.js-anim .stack-card {
+  position: sticky;
+  top: calc(var(--stack-top) + var(--i) * 18px);
+  margin-bottom: 8vh;
 }
-.feature:hover .feature__icon { transform: translateY(-3px); }
-.feature h3 {
-  align-self: start;
+.js-anim .stack-card:last-child { margin-bottom: 0; }
+.stack-card__idx {
+  position: absolute;
+  top: clamp(24px, 4vw, 48px);
+  right: clamp(24px, 4vw, 56px);
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--sand-500);
+  font-variant-numeric: lining-nums;
+}
+.stack-card__big {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(64px, 10vw, 150px);
+  line-height: 0.9;
+  color: var(--gold-500);
+  font-variant-numeric: lining-nums;
+}
+.stack-card__big small {
+  display: block;
+  margin-top: var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  color: var(--sand-300);
+}
+.stack-card h3 {
   font-size: var(--fs-label);
   font-weight: 600;
-  line-height: 1.45;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
-.feature p { align-self: start; color: var(--sand-300); font-size: var(--fs-small); line-height: 1.55; }
-
-/* Браузеры без subgrid: заголовок всегда занимает две строки */
-@supports not (grid-template-rows: subgrid) {
-  .feature { display: flex; flex-direction: column; gap: var(--space-4); }
-  .feature h3 { min-height: 2.9em; }
-}
+.stack-card__text p { max-width: 420px; margin-top: var(--space-3); color: var(--sand-300); font-size: 17px; }
 
 /* ---------- 6. Калькулятор: квиз ---------- */
 .quiz {
@@ -1302,7 +1461,6 @@ em { font-style: italic; }
 
   .services { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-7); }
 
-  .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .steps { grid-template-columns: repeat(3, 1fr); row-gap: var(--space-7); }
   .steps::before { display: none; }
@@ -1430,6 +1588,12 @@ em { font-style: italic; }
     letter-spacing: 0.06em;
   }
   .hero__facts { grid-template-columns: repeat(2, 1fr); }
+  .js-anim .hero__media::before { background: linear-gradient(180deg, rgba(14, 13, 12, 0.35) 0%, rgba(14, 13, 12, 0.85) 55%, var(--ink-900) 100%); }
+  .js-anim .hero__stage { padding-bottom: var(--space-7); }
+  .js-anim .hero__media::after { opacity: var(--fo, 0); }
+  .stack { --stack-top: 10vh; }
+  .ba { aspect-ratio: 4 / 5; }
+  .ba__meta { margin-bottom: var(--space-7); }
   .hero__facts li:nth-child(3) { padding-left: 0; border-left: 0; }
 
   .carousel__nav { display: none; }
@@ -1464,11 +1628,8 @@ em { font-style: italic; }
 
   .services { grid-template-columns: 1fr; }
 
-  .features { gap: 10px; }
-  .feature { row-gap: var(--space-3); padding: 18px 14px; }
-  .feature__icon { width: 28px; height: 28px; }
-  .feature h3 { font-size: 12px; letter-spacing: 0.1em; }
-  .feature p { font-size: 13px; line-height: 1.45; }
+  .stack-card { grid-template-columns: minmax(0, 1fr); align-content: end; gap: var(--space-5); min-height: 52vh; }
+  .stack-card__text p { font-size: 15px; }
 
   .steps { grid-template-columns: 1fr; row-gap: var(--space-6); padding-left: var(--space-1); }
   .steps::before { display: block; left: 4px; right: auto; top: 0; bottom: 0; width: 1px; height: auto; }
@@ -1504,10 +1665,6 @@ em { font-style: italic; }
   }
 }
 
-@media (max-width: 360px) {
-  .feature h3 { font-size: 11px; letter-spacing: 0.06em; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *,
@@ -1518,4 +1675,5 @@ em { font-style: italic; }
     transition-duration: 0.01ms !important;
   }
   .carousel__track { scroll-behavior: auto; }
+  .ba__knob { transition: none; }
 }

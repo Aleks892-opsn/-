@@ -156,6 +156,89 @@
     });
   }
 
+  /* ---------- Сцены, привязанные к прокрутке ---------- */
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+  const seg = (p, a, b) => clamp01((p - a) / (b - a));
+  const heroEl = document.getElementById('top');
+  const stackCards = [...document.querySelectorAll('.stack-card')];
+
+  const updateScenes = () => {
+    // Первый экран: окно с фото растёт, буквы улетают, появляется оффер
+    const r = heroEl.getBoundingClientRect();
+    const p = clamp01(-r.top / Math.max(1, r.height - window.innerHeight));
+    const grow = seg(p, 0, 0.7);
+    heroEl.style.setProperty('--ci', (32 * (1 - grow)) + '%');
+    heroEl.style.setProperty('--cx', (30 * (1 - grow)) + '%');
+    heroEl.style.setProperty('--cr', (4 * (1 - grow)) + 'px');
+    heroEl.style.setProperty('--ws', 1 + seg(p, 0, 0.6) * 1.4);
+    heroEl.style.setProperty('--wo', 1 - seg(p, 0.25, 0.6));
+    const fo = seg(p, 0.68, 0.9);
+    heroEl.style.setProperty('--fo', fo);
+    heroEl.classList.toggle('is-final', fo > 0.95);
+
+    // Карточки «Почему мы?»: та, на которую наезжает следующая, уходит вглубь
+    stackCards.forEach((card, i) => {
+      const next = stackCards[i + 1];
+      if (!next) return;
+      const gap = next.getBoundingClientRect().top - card.getBoundingClientRect().top;
+      const cover = clamp01(1 - gap / (window.innerHeight * 0.6));
+      card.style.setProperty('--s', 1 - cover * 0.06);
+      card.style.setProperty('--b', 1 - cover * 0.45);
+    });
+  };
+
+  if (animOn) {
+    let sceneTick = false;
+    window.addEventListener('scroll', () => {
+      if (sceneTick) return;
+      sceneTick = true;
+      requestAnimationFrame(() => { sceneTick = false; updateScenes(); });
+    }, { passive: true });
+    window.addEventListener('resize', updateScenes);
+    updateScenes();
+  }
+
+  /* ---------- Было / стало ---------- */
+  const ba = document.getElementById('ba');
+  if (ba) {
+    const setBA = (pct) => {
+      const v = Math.min(100, Math.max(0, pct));
+      ba.style.setProperty('--bx', v + '%');
+      ba.setAttribute('aria-valuenow', String(Math.round(v)));
+    };
+    const fromPointer = (e) => {
+      const r = ba.getBoundingClientRect();
+      setBA(((e.clientX - r.left) / r.width) * 100);
+    };
+    let dragging = false;
+    ba.addEventListener('pointerdown', (e) => { dragging = true; ba.setPointerCapture(e.pointerId); fromPointer(e); });
+    ba.addEventListener('pointermove', (e) => { if (dragging) fromPointer(e); });
+    ba.addEventListener('pointerup', () => { dragging = false; });
+    ba.addEventListener('pointercancel', () => { dragging = false; });
+    ba.addEventListener('keydown', (e) => {
+      const now = Number(ba.getAttribute('aria-valuenow'));
+      if (e.key === 'ArrowLeft') { setBA(now - 5); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { setBA(now + 5); e.preventDefault(); }
+    });
+    // При первом появлении ползунок сам «качается», подсказывая, что его можно тянуть
+    if (animOn) {
+      const hintIO = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        hintIO.disconnect();
+        const t0 = performance.now();
+        const wiggle = (now) => {
+          const t = (now - t0) / 1600;
+          if (dragging) return;
+          if (t >= 1) { setBA(50); return; }
+          setBA(50 + Math.sin(t * Math.PI * 2) * 22 * (1 - t));
+          requestAnimationFrame(wiggle);
+        };
+        requestAnimationFrame(wiggle);
+      }, { threshold: 0.6 });
+      hintIO.observe(ba);
+    }
+  }
+
   /* ---------- Этапы: линия на телефоне следует за прокруткой ---------- */
   const stepsList = document.getElementById('steps-list');
   if (animOn && stepsList) {
