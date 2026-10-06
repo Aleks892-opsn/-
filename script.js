@@ -52,51 +52,6 @@
     sections.forEach((s) => spy.observe(s));
   }
 
-  /* ---------- Карусель портфолио ---------- */
-  const track = document.getElementById('pf-track');
-  const prev = document.getElementById('pf-prev');
-  const next = document.getElementById('pf-next');
-  const dotsBox = document.getElementById('pf-dots');
-
-  const cardStep = () => {
-    const card = track.querySelector('.project');
-    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-    return card.getBoundingClientRect().width + gap;
-  };
-  const pageCount = () => {
-    const perView = Math.max(1, Math.round(track.clientWidth / cardStep()));
-    return Math.max(1, track.children.length - perView + 1);
-  };
-  const currentIndex = () => Math.round(track.scrollLeft / cardStep());
-  const goTo = (i) => track.scrollTo({ left: i * cardStep() });
-
-  const buildDots = () => {
-    const n = pageCount();
-    dotsBox.innerHTML = '';
-    dotsBox.hidden = n < 2;
-    for (let i = 0; i < n; i++) {
-      const d = document.createElement('button');
-      d.type = 'button';
-      d.setAttribute('role', 'tab');
-      d.setAttribute('aria-label', 'Проекты, страница ' + (i + 1));
-      d.addEventListener('click', () => goTo(i));
-      dotsBox.appendChild(d);
-    }
-    syncCarousel();
-  };
-  const syncCarousel = () => {
-    const i = Math.min(currentIndex(), pageCount() - 1);
-    [...dotsBox.children].forEach((d, k) => d.setAttribute('aria-selected', String(k === i)));
-    prev.disabled = track.scrollLeft <= 2;
-    next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
-  };
-
-  prev.addEventListener('click', () => goTo(currentIndex() - 1));
-  next.addEventListener('click', () => goTo(currentIndex() + 1));
-  track.addEventListener('scroll', () => requestAnimationFrame(syncCarousel), { passive: true });
-  window.addEventListener('resize', buildDots);
-  buildDots();
-
   /* ---------- Появление блоков и отсчёт цифр ---------- */
   const animOn = document.documentElement.classList.contains('js-anim');
   window.__revealReady = true;
@@ -200,44 +155,90 @@
     updateScenes();
   }
 
-  /* ---------- Было / стало ---------- */
-  const ba = document.getElementById('ba');
-  if (ba) {
-    const setBA = (pct) => {
+  /* ---------- Было / стало: два проекта ---------- */
+  const baGallery = document.getElementById('ba-gallery');
+  if (baGallery) {
+    const PROJECTS = [
+      { title: 'ЖК «Символ» · 78 м² · дизайнерский ремонт · 58 дней' },
+      { title: 'Хамовники · 64 м² · капитальный ремонт · 52 дня' },
+    ];
+    const slides = [...baGallery.querySelectorAll('.ba')];
+    const baTitle = document.getElementById('ba-title');
+    const baNum = document.getElementById('ba-num');
+    let current = 0;
+    let dragging = false;
+
+    const setBA = (ba, pct) => {
       const v = Math.min(100, Math.max(0, pct));
       ba.style.setProperty('--bx', v + '%');
       ba.setAttribute('aria-valuenow', String(Math.round(v)));
     };
-    const fromPointer = (e) => {
-      const r = ba.getBoundingClientRect();
-      setBA(((e.clientX - r.left) / r.width) * 100);
-    };
-    let dragging = false;
-    ba.addEventListener('pointerdown', (e) => { dragging = true; ba.setPointerCapture(e.pointerId); fromPointer(e); });
-    ba.addEventListener('pointermove', (e) => { if (dragging) fromPointer(e); });
-    ba.addEventListener('pointerup', () => { dragging = false; });
-    ba.addEventListener('pointercancel', () => { dragging = false; });
-    ba.addEventListener('keydown', (e) => {
-      const now = Number(ba.getAttribute('aria-valuenow'));
-      if (e.key === 'ArrowLeft') { setBA(now - 5); e.preventDefault(); }
-      if (e.key === 'ArrowRight') { setBA(now + 5); e.preventDefault(); }
+
+    slides.forEach((ba) => {
+      const fromPointer = (e) => {
+        const r = ba.getBoundingClientRect();
+        setBA(ba, ((e.clientX - r.left) / r.width) * 100);
+      };
+      ba.addEventListener('pointerdown', (e) => { dragging = true; ba.setPointerCapture(e.pointerId); fromPointer(e); });
+      ba.addEventListener('pointermove', (e) => { if (dragging) fromPointer(e); });
+      ba.addEventListener('pointerup', () => { dragging = false; });
+      ba.addEventListener('pointercancel', () => { dragging = false; });
+      ba.addEventListener('keydown', (e) => {
+        const now = Number(ba.getAttribute('aria-valuenow'));
+        if (e.key === 'ArrowLeft') { setBA(ba, now - 5); e.preventDefault(); }
+        if (e.key === 'ArrowRight') { setBA(ba, now + 5); e.preventDefault(); }
+      });
     });
-    // При первом появлении ползунок сам «качается», подсказывая, что его можно тянуть
+
+    // Ползунок сам «качается», подсказывая, что его можно тянуть
+    const wiggle = (ba) => {
+      if (!animOn) return;
+      const t0 = performance.now();
+      const step = (now) => {
+        const t = (now - t0) / 1600;
+        if (dragging) return;
+        if (t >= 1) { setBA(ba, 50); return; }
+        setBA(ba, 50 + Math.sin(t * Math.PI * 2) * 22 * (1 - t));
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    const show = (i) => {
+      current = (i + slides.length) % slides.length;
+      slides.forEach((ba, k) => {
+        const on = k === current;
+        ba.classList.toggle('is-active', on);
+        ba.setAttribute('aria-hidden', String(!on));
+        ba.tabIndex = on ? 0 : -1;
+      });
+      setBA(slides[current], 50);
+      baTitle.textContent = PROJECTS[current].title;
+      baNum.textContent = String(current + 1).padStart(2, '0');
+    };
+    document.getElementById('ba-prev').addEventListener('click', () => { show(current - 1); wiggle(slides[current]); });
+    document.getElementById('ba-next').addEventListener('click', () => { show(current + 1); wiggle(slides[current]); });
+
+    // Свайп по подписи и краям тоже переключает проект (сам ползунок тянется пальцем)
+    let sx = null;
+    baGallery.addEventListener('touchstart', (e) => {
+      sx = e.target.closest('.ba') ? null : e.touches[0].clientX;
+    }, { passive: true });
+    baGallery.addEventListener('touchend', (e) => {
+      if (sx === null) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      sx = null;
+      if (Math.abs(dx) > 50) { show(current + (dx < 0 ? 1 : -1)); wiggle(slides[current]); }
+    });
+
+    show(0);
     if (animOn) {
       const hintIO = new IntersectionObserver(([entry]) => {
         if (!entry.isIntersecting) return;
         hintIO.disconnect();
-        const t0 = performance.now();
-        const wiggle = (now) => {
-          const t = (now - t0) / 1600;
-          if (dragging) return;
-          if (t >= 1) { setBA(50); return; }
-          setBA(50 + Math.sin(t * Math.PI * 2) * 22 * (1 - t));
-          requestAnimationFrame(wiggle);
-        };
-        requestAnimationFrame(wiggle);
+        wiggle(slides[current]);
       }, { threshold: 0.6 });
-      hintIO.observe(ba);
+      hintIO.observe(baGallery);
     }
   }
 
@@ -663,7 +664,6 @@
   const openChat = () => {
     mgr.hidden = false;
     mgrBtn.setAttribute('aria-expanded', 'true');
-    syncFab();
     if (!chat.started) { chat.started = true; chatAsk(); }
     setTimeout(() => { if (!mgrIn.disabled) mgrIn.focus({ preventScroll: true }); }, 50);
   };
@@ -671,50 +671,12 @@
     if (mgr.hidden) return;
     mgr.hidden = true;
     mgrBtn.setAttribute('aria-expanded', 'false');
-    checkOverlap();
-    if (!mgrBtn.classList.contains('is-hidden')) mgrBtn.focus({ preventScroll: true });
+    mgrBtn.focus({ preventScroll: true });
   };
   mgrBtn.addEventListener('click', openChat);
   document.getElementById('mgr-close').addEventListener('click', closeChat);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeChat(); });
   document.querySelectorAll('[data-open-chat]').forEach((b) => b.addEventListener('click', openChat));
-
-  // Когда показывать круглую кнопку:
-  // — не на первом экране (там идёт анимация и свои кнопки);
-  // — не когда под ней оказалась кнопка, ссылка, поле или вопрос — чтобы ничего не перекрывать
-  const fabState = { heroGone: false, overlap: false };
-  const INTERACTIVE = 'a, button, input, select, textarea, summary, label, .service, [role="slider"], [tabindex]:not([tabindex="-1"])';
-  const syncFab = () => {
-    const show = fabState.heroGone && !fabState.overlap && mgr.hidden;
-    mgrBtn.classList.toggle('is-hidden', !show);
-  };
-  const checkOverlap = () => {
-    const r = mgrBtn.getBoundingClientRect();
-    const pad = 10;
-    // Сетка 3×3 точек по кнопке с запасом 10px вокруг
-    const xs = [r.left - pad, r.left + r.width / 2, r.right + pad - 1];
-    const ys = [r.top - pad, r.top + r.height / 2, r.bottom + pad - 1];
-    const points = xs.flatMap((x) => ys.map((y) => [x, y]));
-    fabState.overlap = points.some(([x, y]) =>
-      document.elementsFromPoint(x, y).some((el) => !mgrBtn.contains(el) && !mgr.contains(el) && el.closest(INTERACTIVE)));
-    syncFab();
-  };
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([entry]) => {
-      fabState.heroGone = !entry.isIntersecting;
-      checkOverlap();
-    }, { rootMargin: '0px 0px -35% 0px' }).observe(heroEl);
-  } else {
-    fabState.heroGone = true;
-  }
-  let fabTick = false;
-  window.addEventListener('scroll', () => {
-    if (fabTick) return;
-    fabTick = true;
-    requestAnimationFrame(() => { fabTick = false; checkOverlap(); });
-  }, { passive: true });
-  window.addEventListener('resize', checkOverlap);
-  checkOverlap();
 
   /* ---------- Год в подвале ---------- */
   document.getElementById('year').textContent = new Date().getFullYear();

@@ -82,6 +82,10 @@
           <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
           <span>Позвонить</span>
         </a>
+        <button class="header__support" id="mgr-btn" type="button" aria-label="Написать менеджеру" aria-expanded="false" aria-controls="mgr">
+          <svg class="icon" aria-hidden="true"><use href="#i-headset"/></svg>
+          <span class="header__support-dot" aria-hidden="true"></span>
+        </button>
         <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
           <span></span><span></span><span></span>
         </button>
@@ -124,7 +128,7 @@
               </a>
               <a href="#portfolio" class="round-link">
                 <span class="round-link__icon"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></span>
-                <span class="round-link__text"><b>Смотреть работы</b>6 реализованных проектов</span>
+                <span class="round-link__text"><b>Смотреть работы</b>Было / стало</span>
               </a>
             </div>
           </div>
@@ -315,83 +319,43 @@
     <!-- ===== 4. Портфолио ===== -->
     <section class="section" id="portfolio">
       <div class="container">
-        <div class="section__head section__head--row">
-          <div>
-            <p class="eyebrow">Портфолио</p>
-            <h2 class="section__title">Избранные <em>проекты</em></h2>
-          </div>
-          <div class="carousel__nav">
-            <button class="arrow" id="pf-prev" aria-label="Предыдущие проекты"><svg class="icon" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
-            <button class="arrow" id="pf-next" aria-label="Следующие проекты"><svg class="icon" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
-          </div>
+        <div class="section__head">
+          <p class="eyebrow">Портфолио</p>
+          <h2 class="section__title">Было <em>/ стало</em></h2>
         </div>
 
-        <!-- Было / стало: тяните ползунок -->
-        <div class="ba" id="ba" tabindex="0" role="slider" aria-label="Сравнение квартиры до и после ремонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
-          <div class="ba__before">
-            <span class="ba__cap">Фото «до»: голый бетон или старый ремонт</span>
+        <!-- Два проекта «было / стало»: тяните ползунок, стрелки по бокам переключают проект -->
+        <div class="ba-gallery" id="ba-gallery">
+          <div class="ba-slides" id="ba-slides">
+            <div class="ba" data-project="0" tabindex="0" role="slider" aria-label="ЖК «Символ»: сравнение до и после ремонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+              <div class="ba__before">
+                <span class="ba__cap">Проект 1, фото «до»: голый бетон</span>
+              </div>
+              <div class="ba__after ph">
+                <span class="ba__cap">Проект 1, фото «после» с того же ракурса</span>
+              </div>
+              <span class="ba__tag ba__tag--l">Было</span>
+              <span class="ba__tag ba__tag--r">Стало</span>
+              <div class="ba__handle"><span class="ba__knob" aria-hidden="true">⟷</span></div>
+            </div>
+            <div class="ba" data-project="1" tabindex="-1" role="slider" aria-label="Хамовники: сравнение до и после ремонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-hidden="true">
+              <div class="ba__before ba__before--old">
+                <span class="ba__cap">Проект 2, фото «до»: старый ремонт</span>
+              </div>
+              <div class="ba__after ph ba__after--alt">
+                <span class="ba__cap">Проект 2, фото «после» с того же ракурса</span>
+              </div>
+              <span class="ba__tag ba__tag--l">Было</span>
+              <span class="ba__tag ba__tag--r">Стало</span>
+              <div class="ba__handle"><span class="ba__knob" aria-hidden="true">⟷</span></div>
+            </div>
           </div>
-          <div class="ba__after ph">
-            <span class="ba__cap">Фото «после» с того же ракурса</span>
-          </div>
-          <span class="ba__tag ba__tag--l">Было</span>
-          <span class="ba__tag ba__tag--r">Стало</span>
-          <div class="ba__handle"><span class="ba__knob" aria-hidden="true">⟷</span></div>
+          <button class="ba-arrow ba-arrow--prev" id="ba-prev" type="button" aria-label="Предыдущий проект"><svg class="icon" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
+          <button class="ba-arrow ba-arrow--next" id="ba-next" type="button" aria-label="Следующий проект"><svg class="icon" aria-hidden="true"><use href="#i-chev-r"/></svg></button>
         </div>
-        <p class="ba__meta"><span>ЖК «Символ» · 78&nbsp;м² · дизайнерский ремонт</span><span>58 дней</span></p>
-
-        <div class="carousel">
-          <ul class="carousel__track" id="pf-track">
-            <li class="project">
-              <figure class="ph ph--project">
-                <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-                <figcaption class="ph__label">Проект 1: гостиная с панорамным окном. 4:5, от 1200×1500 px</figcaption>
-              </figure>
-              <h3>ЖК «Символ», 78 м²</h3>
-              <p>Дизайнерский ремонт · 58 дней</p>
-            </li>
-            <li class="project">
-              <figure class="ph ph--project">
-                <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-                <figcaption class="ph__label">Проект 2: кухня с островом и подсветкой. 4:5</figcaption>
-              </figure>
-              <h3>Хамовники, 64 м²</h3>
-              <p>Капитальный ремонт · 52 дня</p>
-            </li>
-            <li class="project">
-              <figure class="ph ph--project">
-                <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-                <figcaption class="ph__label">Проект 3: спальня, тёплый свет бра. 4:5</figcaption>
-              </figure>
-              <h3>ЖК «Сердце столицы», 45 м²</h3>
-              <p>Новостройка · 44 дня</p>
-            </li>
-            <li class="project">
-              <figure class="ph ph--project">
-                <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-                <figcaption class="ph__label">Проект 4: санузел, камень и латунь. 4:5</figcaption>
-              </figure>
-              <h3>Сокольники, 52 м²</h3>
-              <p>Косметический ремонт · 27 дней</p>
-            </li>
-            <li class="project">
-              <figure class="ph ph--project">
-                <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-                <figcaption class="ph__label">Проект 5: детская в тёплых тонах. 4:5</figcaption>
-              </figure>
-              <h3>Митино, 96 м²</h3>
-              <p>Капитальный ремонт · 60 дней</p>
-            </li>
-            <li class="project">
-              <figure class="ph ph--project">
-                <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-                <figcaption class="ph__label">Проект 6: кухня-гостиная, вечерний город за окном. 4:5</figcaption>
-              </figure>
-              <h3>ЖК «Level Мичуринский», 112 м²</h3>
-              <p>Дизайнерский ремонт · 60 дней</p>
-            </li>
-          </ul>
-          <div class="dots" id="pf-dots" role="tablist" aria-label="Страницы портфолио"></div>
+        <div class="ba__meta" aria-live="polite">
+          <span id="ba-title">ЖК «Символ» · 78&nbsp;м² · дизайнерский ремонт · 58 дней</span>
+          <span class="ba__count"><b id="ba-num">01</b> / 02</span>
         </div>
       </div>
     </section>
@@ -788,10 +752,6 @@
   </footer>
 
   <!-- Чат с менеджером: кнопка внизу справа и окно переписки -->
-  <button class="mgr-btn is-hidden" id="mgr-btn" type="button" aria-label="Написать менеджеру" aria-expanded="false" aria-controls="mgr">
-    <svg class="icon" aria-hidden="true"><use href="#i-headset"/></svg>
-    <span class="mgr-btn__dot" aria-hidden="true"></span>
-  </button>
   <section class="mgr" id="mgr" role="dialog" aria-label="Чат с менеджером" hidden>
     <header class="mgr__head">
       <span class="mgr__ava" aria-hidden="true">RD</span>
