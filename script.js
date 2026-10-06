@@ -156,26 +156,11 @@
     });
   }
 
-  /* ---------- Сцены, привязанные к прокрутке ---------- */
+  /* ---------- Первый экран и карточки «Почему мы?» ---------- */
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
-  const seg = (p, a, b) => clamp01((p - a) / (b - a));
-  const heroEl = document.getElementById('top');
   const stackCards = [...document.querySelectorAll('.stack-card')];
 
   const updateScenes = () => {
-    // Первый экран: окно с фото растёт, буквы улетают, появляется оффер
-    const r = heroEl.getBoundingClientRect();
-    const p = clamp01(-r.top / Math.max(1, r.height - window.innerHeight));
-    const grow = seg(p, 0, 0.7);
-    heroEl.style.setProperty('--ci', (32 * (1 - grow)) + '%');
-    heroEl.style.setProperty('--cx', (30 * (1 - grow)) + '%');
-    heroEl.style.setProperty('--cr', (4 * (1 - grow)) + 'px');
-    heroEl.style.setProperty('--ws', 1 + seg(p, 0, 0.6) * 1.4);
-    heroEl.style.setProperty('--wo', 1 - seg(p, 0.25, 0.6));
-    const fo = seg(p, 0.68, 0.9);
-    heroEl.style.setProperty('--fo', fo);
-    heroEl.classList.toggle('is-final', fo > 0.95);
-
     // Карточки «Почему мы?»: та, на которую наезжает следующая, уходит вглубь
     stackCards.forEach((card, i) => {
       const next = stackCards[i + 1];
@@ -186,6 +171,23 @@
       card.style.setProperty('--b', 1 - cover * 0.45);
     });
   };
+
+  // Первый экран: анимация запускается сама, как только загрузились шрифты
+  // (но не позже чем через 0,6 с), и длится около 2 секунд
+  const heroEl = document.getElementById('top');
+  if (animOn) {
+    let started = false;
+    const play = () => {
+      if (started) return;
+      started = true;
+      requestAnimationFrame(() => {
+        heroEl.classList.add('is-play');
+        setTimeout(() => heroEl.classList.add('is-final'), 1700);
+      });
+    };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(play);
+    setTimeout(play, 600);
+  }
 
   if (animOn) {
     let sceneTick = false;

@@ -506,42 +506,34 @@ em { font-style: italic; }
 .facts { padding-bottom: var(--space-7); }
 .facts .hero__facts { margin-top: 0; }
 
-/* Первый экран-сцена: окно с фото растёт до полного экрана, буквы улетают,
-   появляется оффер. Включается только с классом js-anim (см. <head>),
-   иначе первый экран выглядит как обычно */
+/* Первый экран: анимация запускается сама при открытии (~2 с).
+   Окно с фото растёт до полного экрана, буквы увеличиваются и растворяются,
+   затем проявляется оффер. Только с классом js-anim (см. <head>),
+   иначе первый экран статичный. Старт — класс .is-play из script.js */
 .hero__word { display: none; }
-.js-anim .hero {
-  display: block;
-  height: 260vh;
-  min-height: 0;
-  padding: 0;
-  overflow: visible;
-}
-.js-anim .hero__stage {
-  position: sticky;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  height: 100vh;
-  height: 100svh;
-  padding-top: var(--header-h);
-  padding-bottom: var(--space-8);
-  overflow: hidden;
-}
+.js-anim .hero { min-height: 100vh; min-height: 100svh; }
 .js-anim .hero__media {
   width: 100%;
-  clip-path: inset(var(--ci, 32%) var(--cx, 30%) round var(--cr, 4px));
+  clip-path: inset(32% 30% round 4px);
+  transition: clip-path 1100ms cubic-bezier(0.65, 0, 0.35, 1) 250ms;
   will-change: clip-path;
 }
+.js-anim .hero.is-play .hero__media { clip-path: inset(0 0 0 0 round 0); }
 .js-anim .hero__media::before {
   background:
     linear-gradient(90deg, rgba(14, 13, 12, 0.9) 0%, rgba(14, 13, 12, 0.45) 45%, transparent 75%),
     linear-gradient(0deg, rgba(14, 13, 12, 0.85) 0%, transparent 45%);
-  opacity: var(--fo, 0);
+  opacity: 0;
+  transition: opacity 700ms var(--ease) 1000ms;
 }
 .js-anim .hero__media .ph__icon,
-.js-anim .hero__media .ph__label { opacity: var(--fo, 0); }
+.js-anim .hero__media .ph__label {
+  opacity: 0;
+  transition: opacity 600ms var(--ease) 1200ms;
+}
+.js-anim .hero.is-play .hero__media::before,
+.js-anim .hero.is-play .hero__media .ph__icon,
+.js-anim .hero.is-play .hero__media .ph__label { opacity: 1; }
 .js-anim .hero__word {
   display: block;
   position: absolute;
@@ -549,7 +541,7 @@ em { font-style: italic; }
   top: 50%;
   z-index: 1;
   margin: 0;
-  transform: translate(-50%, -50%) scale(var(--ws, 1));
+  transform: translate(-50%, -50%) scale(1);
   font-family: var(--font-display);
   font-weight: 300;
   font-size: clamp(56px, 15vw, 220px);
@@ -559,18 +551,31 @@ em { font-style: italic; }
   white-space: nowrap;
   color: var(--sand-100);
   mix-blend-mode: difference;
-  opacity: var(--wo, 1);
   pointer-events: none;
+  transition: transform 1200ms cubic-bezier(0.65, 0, 0.35, 1) 250ms, opacity 700ms var(--ease) 650ms;
+  will-change: transform, opacity;
 }
+.js-anim .hero.is-play .hero__word { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
 .js-anim .hero__word span { display: block; font-style: italic; color: var(--gold-500); mix-blend-mode: normal; }
-.js-anim .hero__inner {
-  z-index: 2;
-  opacity: var(--fo, 0);
-  transform: translateY(calc((1 - var(--fo, 0)) * 30px));
-  pointer-events: none;
-}
+.js-anim .hero__inner { z-index: 2; pointer-events: none; }
 .js-anim .hero.is-final .hero__inner { pointer-events: auto; }
-.js-anim .hero__title .line { animation: none; }
+/* Оффер: строки заголовка и остальное выезжают по очереди */
+.js-anim .hero__title .line,
+.js-anim .hero__content > :not(.hero__title) {
+  animation: none;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+}
+.js-anim .hero__content > .eyebrow { transition-delay: 1050ms; }
+.js-anim .hero__title .line:nth-child(1) { transition-delay: 1150ms; }
+.js-anim .hero__title .line:nth-child(2) { transition-delay: 1250ms; }
+.js-anim .hero__title .line:nth-child(3) { transition-delay: 1350ms; }
+.js-anim .hero__content > .stroke { transition-delay: 1450ms; }
+.js-anim .hero__content > .hero__lead { transition-delay: 1500ms; }
+.js-anim .hero__content > .hero__actions { transition-delay: 1600ms; }
+.js-anim .hero.is-play .hero__title .line,
+.js-anim .hero.is-play .hero__content > :not(.hero__title) { opacity: 1; transform: none; }
 
 /* ---------- Было / стало ---------- */
 .ba {
@@ -1589,8 +1594,8 @@ em { font-style: italic; }
   }
   .hero__facts { grid-template-columns: repeat(2, 1fr); }
   .js-anim .hero__media::before { background: linear-gradient(180deg, rgba(14, 13, 12, 0.35) 0%, rgba(14, 13, 12, 0.85) 55%, var(--ink-900) 100%); }
-  .js-anim .hero__stage { padding-bottom: var(--space-7); }
-  .js-anim .hero__media::after { opacity: var(--fo, 0); }
+  .js-anim .hero__media::after { opacity: 0; transition: opacity 600ms var(--ease) 1200ms; }
+  .js-anim .hero.is-play .hero__media::after { opacity: 1; }
   .stack { --stack-top: 10vh; }
   .ba { aspect-ratio: 4 / 5; }
   .ba__meta { margin-bottom: var(--space-7); }
