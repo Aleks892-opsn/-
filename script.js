@@ -489,13 +489,203 @@
     if (!hiddenReviews().length) moreBtn.parentElement.hidden = true;
   });
 
-  /* ---------- FAQ: открыт только один вопрос ---------- */
-  const faqItems = document.querySelectorAll('.faq__item');
+  /* ---------- FAQ: поиск и «открыт только один вопрос» ---------- */
+  const faqItems = [...document.querySelectorAll('.faq__item')];
+  const faqInput = document.getElementById('faq-q');
+  const faqEmpty = document.getElementById('faq-empty');
+  const faqHints = [...document.querySelectorAll('.faq-hint')];
+  let faqSearching = false;
+
   faqItems.forEach((item) => {
     item.addEventListener('toggle', () => {
-      if (item.open) faqItems.forEach((other) => { if (other !== item) other.open = false; });
+      // Во время поиска несколько ответов могут быть открыты сразу
+      if (item.open && !faqSearching) faqItems.forEach((other) => { if (other !== item) other.open = false; });
     });
   });
+
+  // Сохраняем исходный текст, чтобы подсвечивать совпадения и возвращать как было
+  const faqSrc = faqItems.map((item) => ({
+    q: item.querySelector('summary'),
+    a: item.querySelector('.faq__body p'),
+    qText: item.querySelector('summary').textContent,
+    aText: item.querySelector('.faq__body p').textContent,
+  }));
+  const escapeHtml = (t) => t.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+  const highlight = (text, q) => {
+    const i = q ? text.toLowerCase().indexOf(q) : -1;
+    if (i < 0) return escapeHtml(text);
+    return escapeHtml(text.slice(0, i)) + '<mark>' + escapeHtml(text.slice(i, i + q.length)) + '</mark>' + escapeHtml(text.slice(i + q.length));
+  };
+  const runFaqSearch = () => {
+    const q = faqInput.value.trim().toLowerCase();
+    faqSearching = Boolean(q);
+    let found = 0;
+    faqItems.forEach((item, i) => {
+      const src = faqSrc[i];
+      const inQ = src.qText.toLowerCase().includes(q);
+      const inA = src.aText.toLowerCase().includes(q);
+      const hit = !q || inQ || inA;
+      item.hidden = !hit;
+      if (hit) found += 1;
+      src.q.innerHTML = highlight(src.qText, q);
+      src.a.innerHTML = highlight(src.aText, q);
+      // Совпадение только в ответе — раскрываем его, чтобы было видно
+      item.open = Boolean(q && hit && inA && !inQ) || (Boolean(q) && item.open && hit);
+    });
+    faqEmpty.hidden = found > 0;
+    faqHints.forEach((h) => h.classList.toggle('is-on', h.textContent === faqInput.value.trim()));
+  };
+  faqInput.addEventListener('input', runFaqSearch);
+  faqHints.forEach((h) => h.addEventListener('click', () => {
+    faqInput.value = faqInput.value.trim() === h.textContent ? '' : h.textContent;
+    runFaqSearch();
+  }));
+
+  /* ---------- Услуги: карточки-перевёртыши ---------- */
+  document.querySelectorAll('.service').forEach((card) => {
+    const front = card.querySelector('.service__front');
+    const back = card.querySelector('.service__back');
+    const [openBtn] = front.querySelectorAll('.service__more');
+    const backBtn = back.querySelector('.service__more');
+    const flip = (on, moveFocus) => {
+      card.classList.toggle('is-flipped', on);
+      openBtn.setAttribute('aria-expanded', String(on));
+      front.setAttribute('aria-hidden', String(on));
+      back.setAttribute('aria-hidden', String(!on));
+      openBtn.tabIndex = on ? -1 : 0;
+      backBtn.tabIndex = on ? 0 : -1;
+      // Фокус переносим только при управлении с клавиатуры
+      if (moveFocus) (on ? backBtn : openBtn).focus({ preventScroll: true });
+    };
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      flip(!card.classList.contains('is-flipped'), e.detail === 0);
+    });
+  });
+
+  /* ---------- Чат с менеджером ---------- */
+  const mgrBtn = document.getElementById('mgr-btn');
+  const mgr = document.getElementById('mgr');
+  const mgrLog = document.getElementById('mgr-log');
+  const mgrQuick = document.getElementById('mgr-quick');
+  const mgrForm = document.getElementById('mgr-form');
+  const mgrIn = document.getElementById('mgr-in');
+  const chat = { step: 0, name: '', phone: '', area: '', started: false };
+  const typingDelay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 800;
+
+  const say = (text, who) => {
+    const m = document.createElement('div');
+    m.className = 'mgr__msg mgr__msg--' + who;
+    m.textContent = text;
+    mgrLog.appendChild(m);
+    mgrLog.scrollTop = mgrLog.scrollHeight;
+  };
+  const botSay = (text, then) => {
+    const t = document.createElement('div');
+    t.className = 'mgr__typing';
+    t.innerHTML = '<i></i><i></i><i></i>';
+    mgrLog.appendChild(t);
+    mgrLog.scrollTop = mgrLog.scrollHeight;
+    setTimeout(() => { t.remove(); say(text, 'bot'); if (then) then(); }, typingDelay);
+  };
+  const quickReplies = (list) => {
+    mgrQuick.innerHTML = '';
+    list.forEach((label) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mgr__chip';
+      b.textContent = label;
+      b.addEventListener('click', () => chatAnswer(label));
+      mgrQuick.appendChild(b);
+    });
+  };
+  const chatAsk = () => {
+    if (chat.step === 0) {
+      botSay('Здравствуйте! Я Анна из REMONT DESIGN. Как к вам обращаться?');
+      mgrIn.type = 'text';
+      mgrIn.placeholder = 'Ваше имя';
+    } else if (chat.step === 1) {
+      botSay(chat.name + ', очень приятно! Оставьте телефон — пришлю расчёт и перезвоню.');
+      mgrIn.type = 'tel';
+      mgrIn.inputMode = 'tel';
+      mgrIn.placeholder = '+7 (___) ___-__-__';
+    } else if (chat.step === 2) {
+      botSay('Отлично. Какая площадь квартиры?', () => quickReplies(['до 40 м²', '40–60 м²', '60–80 м²', '80–100 м²', 'больше 100 м²']));
+      mgrIn.type = 'text';
+      mgrIn.inputMode = 'text';
+      mgrIn.placeholder = 'Или напишите своё';
+    } else if (chat.step === 3) {
+      mgrIn.disabled = true;
+      botSay('Почти готово! Подтвердите согласие на обработку данных, и я передам заявку.', () => {
+        mgrQuick.innerHTML = '<label class="mgr__consent"><input type="checkbox" id="mgr-consent"> <span>Я даю согласие на обработку персональных данных в соответствии с 152-ФЗ и принимаю <a href="privacy.html" target="_blank" rel="noopener">политику конфиденциальности</a></span></label>';
+        const send = document.createElement('button');
+        send.type = 'button';
+        send.className = 'mgr__chip mgr__chip--main';
+        send.textContent = 'Отправить заявку';
+        send.disabled = true;
+        mgrQuick.appendChild(send);
+        document.getElementById('mgr-consent').addEventListener('change', (e) => { send.disabled = !e.target.checked; });
+        send.addEventListener('click', () => {
+          mgrQuick.innerHTML = '';
+          say('Отправить заявку', 'me');
+          chat.step = 4;
+          // TODO: отправьте заявку из чата туда же, куда и форму (CRM, почта, Telegram-бот)
+          // fetch('/api/lead', { method: 'POST', body: JSON.stringify({ name: chat.name, phone: chat.phone, area: chat.area, source: 'chat' }) })
+          botSay('Готово, ' + chat.name + '! Заявка принята: ' + chat.phone + ', площадь ' + chat.area + '. Перезвоню в течение 15 минут в рабочее время.');
+        });
+      });
+    }
+  };
+  const chatAnswer = (raw) => {
+    const text = String(raw).trim();
+    if (!text || chat.step > 2) return;
+    if (chat.step === 1 && text.replace(/\D/g, '').length !== 11) {
+      botSay('Кажется, в номере не хватает цифр. Проверьте, пожалуйста.');
+      return;
+    }
+    say(text, 'me');
+    if (chat.step === 0) chat.name = text;
+    if (chat.step === 1) chat.phone = text;
+    if (chat.step === 2) chat.area = text;
+    mgrIn.value = '';
+    mgrQuick.innerHTML = '';
+    chat.step += 1;
+    chatAsk();
+  };
+  mgrIn.addEventListener('input', () => {
+    if (chat.step === 1) mgrIn.value = formatPhone(mgrIn.value);
+  });
+  mgrForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    chatAnswer(mgrIn.value);
+  });
+
+  const openChat = () => {
+    mgr.hidden = false;
+    mgrBtn.setAttribute('aria-expanded', 'true');
+    mgrBtn.classList.add('is-hidden');
+    if (!chat.started) { chat.started = true; chatAsk(); }
+    setTimeout(() => { if (!mgrIn.disabled) mgrIn.focus({ preventScroll: true }); }, 50);
+  };
+  const closeChat = () => {
+    if (mgr.hidden) return;
+    mgr.hidden = true;
+    mgrBtn.setAttribute('aria-expanded', 'false');
+    mgrBtn.classList.remove('is-hidden');
+    mgrBtn.focus({ preventScroll: true });
+  };
+  mgrBtn.addEventListener('click', openChat);
+  document.getElementById('mgr-close').addEventListener('click', closeChat);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeChat(); });
+  document.querySelectorAll('[data-open-chat]').forEach((b) => b.addEventListener('click', openChat));
+
+  // На телефоне в самом конце страницы есть свои кнопки связи — там круглую кнопку прячем
+  const endBar = document.querySelector('.action-bar');
+  if (endBar && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      if (mgr.hidden) mgrBtn.classList.toggle('is-hidden', entry.isIntersecting);
+    }).observe(endBar);
+  }
 
   /* ---------- Год в подвале ---------- */
   document.getElementById('year').textContent = new Date().getFullYear();

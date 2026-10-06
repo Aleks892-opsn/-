@@ -45,6 +45,9 @@
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
       <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.56.95-4.75 4.63 1.12 6.54L12 17.5l-5.87 3.08 1.12-6.54L2.5 9.41l6.56-.95z"/></symbol>
       <symbol id="i-quote" viewBox="0 0 24 24"><path d="M10 7.5C7 8.5 5 10.8 5 14v3.5h5V13H7.6c.3-1.6 1.4-2.8 3-3.4zM19 7.5c-3 1-5 3.3-5 6.5v3.5h5V13h-2.4c.3-1.6 1.4-2.8 3-3.4z"/></symbol>
+      <symbol id="i-headset" viewBox="0 0 24 24"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
     </defs>
   </svg>
 
@@ -151,43 +154,111 @@
 
         <div class="services">
           <article class="service" data-reveal>
-            <figure class="ph ph--card">
-              <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-              <figcaption class="ph__label">Светлая комната после покраски стен и замены напольного покрытия. 4:3</figcaption>
-            </figure>
-            <h3>Косметический</h3>
-            <p>Обновим отделку без вмешательства в инженерию: стены, потолки, полы, двери.</p>
-            <p class="service__meta"><span class="service__price">от 6 000 ₽/м²</span><span>от 25 дней</span></p>
+            <div class="service__inner">
+              <div class="service__face service__front">
+                <figure class="ph ph--card">
+                  <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
+                  <figcaption class="ph__label">Светлая комната после покраски стен и замены напольного покрытия. 4:3</figcaption>
+                </figure>
+                <h3>Косметический</h3>
+                <p>Обновим отделку без вмешательства в инженерию: стены, потолки, полы, двери.</p>
+                <p class="service__meta"><span class="service__price">от 6 000 ₽/м²</span><span>от 25 дней</span></p>
+                <button class="service__more" type="button" aria-expanded="false">Что входит <span aria-hidden="true">↻</span></button>
+              </div>
+              <div class="service__face service__back" aria-hidden="true">
+                <h3>Косметический · что входит</h3>
+                <ul class="service__list">
+                  <li>Покраска стен и потолков</li>
+                  <li>Поклейка обоев</li>
+                  <li>Замена напольного покрытия</li>
+                  <li>Замена дверей и плинтусов</li>
+                  <li>Уборка после ремонта</li>
+                </ul>
+                <p class="service__back-price"><span class="service__price">от 6 000 ₽/м²</span><span>от 25 дней</span></p>
+                <button class="service__more" type="button" tabindex="-1">Назад <span aria-hidden="true">↺</span></button>
+              </div>
+            </div>
           </article>
 
           <article class="service" data-reveal>
-            <figure class="ph ph--card">
-              <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-              <figcaption class="ph__label">Крупный план фактур: штукатурка, разводка электрики, стяжка. 4:3</figcaption>
-            </figure>
-            <h3>Капитальный</h3>
-            <p>Полная замена электрики и сантехники, выравнивание, перепланировка с согласованием.</p>
-            <p class="service__meta"><span class="service__price">от 14 000 ₽/м²</span><span>от 50 дней</span></p>
+            <div class="service__inner">
+              <div class="service__face service__front">
+                <figure class="ph ph--card">
+                  <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
+                  <figcaption class="ph__label">Крупный план фактур: штукатурка, разводка электрики, стяжка. 4:3</figcaption>
+                </figure>
+                <h3>Капитальный</h3>
+                <p>Полная замена электрики и сантехники, выравнивание, перепланировка с согласованием.</p>
+                <p class="service__meta"><span class="service__price">от 14 000 ₽/м²</span><span>от 50 дней</span></p>
+                <button class="service__more" type="button" aria-expanded="false">Что входит <span aria-hidden="true">↻</span></button>
+              </div>
+              <div class="service__face service__back" aria-hidden="true">
+                <h3>Капитальный · что входит</h3>
+                <ul class="service__list">
+                  <li>Демонтаж и вывоз мусора</li>
+                  <li>Новая электрика и сантехника</li>
+                  <li>Выравнивание стен и стяжка</li>
+                  <li>Чистовая отделка</li>
+                  <li>Гарантия 3 года</li>
+                </ul>
+                <p class="service__back-price"><span class="service__price">от 14 000 ₽/м²</span><span>от 50 дней</span></p>
+                <button class="service__more" type="button" tabindex="-1">Назад <span aria-hidden="true">↺</span></button>
+              </div>
+            </div>
           </article>
 
           <article class="service" data-reveal>
-            <figure class="ph ph--card">
-              <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-              <figcaption class="ph__label">Деталь дизайнерского интерьера: камень, латунь, тёплая подсветка. 4:3</figcaption>
-            </figure>
-            <h3>Дизайнерский</h3>
-            <p>Дизайн-проект с 3D-визуализацией, авторский надзор, комплектация мебелью и декором.</p>
-            <p class="service__meta"><span class="service__price">от 22 000 ₽/м²</span><span>от 60 дней</span></p>
+            <div class="service__inner">
+              <div class="service__face service__front">
+                <figure class="ph ph--card">
+                  <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
+                  <figcaption class="ph__label">Деталь дизайнерского интерьера: камень, латунь, тёплая подсветка. 4:3</figcaption>
+                </figure>
+                <h3>Дизайнерский</h3>
+                <p>Дизайн-проект с 3D-визуализацией, авторский надзор, комплектация мебелью и декором.</p>
+                <p class="service__meta"><span class="service__price">от 22 000 ₽/м²</span><span>от 60 дней</span></p>
+                <button class="service__more" type="button" aria-expanded="false">Что входит <span aria-hidden="true">↻</span></button>
+              </div>
+              <div class="service__face service__back" aria-hidden="true">
+                <h3>Дизайнерский · что входит</h3>
+                <ul class="service__list">
+                  <li>Дизайн-проект и 3D-визуализация</li>
+                  <li>Подбор и закупка материалов</li>
+                  <li>Авторский надзор</li>
+                  <li>Мебель и декор</li>
+                  <li>Ремонт под ключ</li>
+                </ul>
+                <p class="service__back-price"><span class="service__price">от 22 000 ₽/м²</span><span>от 60 дней</span></p>
+                <button class="service__more" type="button" tabindex="-1">Назад <span aria-hidden="true">↺</span></button>
+              </div>
+            </div>
           </article>
 
           <article class="service" data-reveal>
-            <figure class="ph ph--card">
-              <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
-              <figcaption class="ph__label">Готовая квартира в новостройке, вечерний вид на ЖК из окна. 4:3</figcaption>
-            </figure>
-            <h3>Новостройки</h3>
-            <p>Из бетона или white box в готовую квартиру. Принимаем объект у застройщика вместе с вами.</p>
-            <p class="service__meta"><span class="service__price">от 11 000 ₽/м²</span><span>от 45 дней</span></p>
+            <div class="service__inner">
+              <div class="service__face service__front">
+                <figure class="ph ph--card">
+                  <svg class="ph__icon" aria-hidden="true"><use href="#i-image"/></svg>
+                  <figcaption class="ph__label">Готовая квартира в новостройке, вечерний вид на ЖК из окна. 4:3</figcaption>
+                </figure>
+                <h3>Новостройки</h3>
+                <p>Из бетона или white box в готовую квартиру. Принимаем объект у застройщика вместе с вами.</p>
+                <p class="service__meta"><span class="service__price">от 11 000 ₽/м²</span><span>от 45 дней</span></p>
+                <button class="service__more" type="button" aria-expanded="false">Что входит <span aria-hidden="true">↻</span></button>
+              </div>
+              <div class="service__face service__back" aria-hidden="true">
+                <h3>Новостройки · что входит</h3>
+                <ul class="service__list">
+                  <li>Приёмка у застройщика</li>
+                  <li>Черновые работы из бетона</li>
+                  <li>Инженерия и отделка</li>
+                  <li>Установка сантехники</li>
+                  <li>Клининг и сдача</li>
+                </ul>
+                <p class="service__back-price"><span class="service__price">от 11 000 ₽/м²</span><span>от 45 дней</span></p>
+                <button class="service__more" type="button" tabindex="-1">Назад <span aria-hidden="true">↺</span></button>
+              </div>
+            </div>
           </article>
         </div>
       </div>
@@ -573,27 +644,53 @@
           <p class="section__note">Не нашли ответ? Позвоните нам, проконсультируем бесплатно.</p>
         </div>
 
-        <div class="faq">
-          <details class="faq__item">
-            <summary>Сколько времени займёт ремонт?</summary>
-            <div class="faq__body"><p>Ремонт под ключ с дизайн-проектом занимает в среднем 60 дней для квартиры до 80 м². Косметический ремонт — от 25 дней. Точный срок прописываем в договоре, а за каждый день просрочки по нашей вине выплачиваем неустойку.</p></div>
-          </details>
-          <details class="faq__item">
-            <summary>Может ли смета измениться в процессе?</summary>
-            <div class="faq__body"><p>Нет, если вы не меняете объём работ. Смета фиксируется в договоре. Изменения возможны только по вашей инициативе — например, если вы решили добавить тёплый пол — и оформляются дополнительным соглашением с вашей подписью.</p></div>
-          </details>
-          <details class="faq__item">
-            <summary>Кто закупает материалы?</summary>
-            <div class="faq__body"><p>Как вам удобнее. Черновые материалы закупаем мы — с оптовыми скидками до 20% и отчётом по чекам. Чистовые можно выбрать вместе с дизайнером в салонах-партнёрах или купить самостоятельно.</p></div>
-          </details>
-          <details class="faq__item">
-            <summary>Какой договор вы заключаете?</summary>
-            <div class="faq__body"><p>Официальный договор подряда с юридическим лицом. В нём закреплены смета, сроки, этапы оплаты, гарантия 3 года и ответственность сторон. Образец договора можем прислать заранее.</p></div>
-          </details>
-          <details class="faq__item">
-            <summary>Можно ли оплатить ремонт в рассрочку?</summary>
-            <div class="faq__body"><p>Да. Помимо поэтапной оплаты по факту работ, доступна рассрочка через банки-партнёры на срок до 24 месяцев. Условия зависят от банка и согласовываются индивидуально.</p></div>
-          </details>
+        <div class="faq-col">
+          <label class="faq-search">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="faq-q" type="search" placeholder="Найти вопрос…" aria-label="Поиск по вопросам" autocomplete="off" enterkeyhint="search">
+          </label>
+          <div class="faq-hints" id="faq-hints">
+            <button class="faq-hint" type="button">сроки</button>
+            <button class="faq-hint" type="button">смета</button>
+            <button class="faq-hint" type="button">рассрочка</button>
+            <button class="faq-hint" type="button">гарантия</button>
+            <button class="faq-hint" type="button">материалы</button>
+          </div>
+          <div class="faq" id="faq-list">
+            <details class="faq__item">
+              <summary>Сколько времени займёт ремонт?</summary>
+              <div class="faq__body"><p>Ремонт под ключ с дизайн-проектом занимает в среднем 60 дней для квартиры до 80 м². Косметический ремонт — от 25 дней. Точный срок прописываем в договоре, а за каждый день просрочки по нашей вине выплачиваем неустойку.</p></div>
+            </details>
+            <details class="faq__item">
+              <summary>Может ли смета измениться в процессе?</summary>
+              <div class="faq__body"><p>Нет, если вы не меняете объём работ. Смета фиксируется в договоре. Изменения возможны только по вашей инициативе — например, если вы решили добавить тёплый пол — и оформляются дополнительным соглашением с вашей подписью.</p></div>
+            </details>
+            <details class="faq__item">
+              <summary>Кто закупает материалы?</summary>
+              <div class="faq__body"><p>Как вам удобнее. Черновые материалы закупаем мы — с оптовыми скидками до 20% и отчётом по чекам. Чистовые можно выбрать вместе с дизайнером в салонах-партнёрах или купить самостоятельно.</p></div>
+            </details>
+            <details class="faq__item">
+              <summary>Какой договор вы заключаете?</summary>
+              <div class="faq__body"><p>Официальный договор подряда с юридическим лицом. В нём закреплены смета, сроки, этапы оплаты, гарантия 3 года и ответственность сторон. Образец договора можем прислать заранее.</p></div>
+            </details>
+            <details class="faq__item">
+              <summary>Можно ли оплатить ремонт в рассрочку?</summary>
+              <div class="faq__body"><p>Да. Помимо поэтапной оплаты по факту работ, доступна рассрочка через банки-партнёры на срок до 24 месяцев. Условия зависят от банка и согласовываются индивидуально.</p></div>
+            </details>
+            <details class="faq__item">
+              <summary>Какая гарантия на работы?</summary>
+              <div class="faq__body"><p>Официальная гарантия 3 года на все работы по договору. Если что-то случится — приедем и устраним за наш счёт.</p></div>
+            </details>
+            <details class="faq__item">
+              <summary>Можно ли жить в квартире во время ремонта?</summary>
+              <div class="faq__body"><p>При косметическом ремонте — частично да, работаем по комнатам. При капитальном лучше переехать на время черновых работ: будет шумно и пыльно.</p></div>
+            </details>
+            <details class="faq__item">
+              <summary>Как я узнаю, что происходит на объекте?</summary>
+              <div class="faq__body"><p>Прораб присылает фотоотчёт каждый день в WhatsApp или Telegram, а каждый этап вы принимаете лично на объекте.</p></div>
+            </details>
+          </div>
+          <p class="faq-empty" id="faq-empty" hidden>Такого вопроса пока нет. <button type="button" class="faq-ask" data-open-chat>Спросите менеджера →</button></p>
         </div>
       </div>
     </section>
@@ -689,6 +786,25 @@
       </nav>
     </div>
   </footer>
+
+  <!-- Чат с менеджером: кнопка внизу справа и окно переписки -->
+  <button class="mgr-btn" id="mgr-btn" type="button" aria-label="Написать менеджеру" aria-expanded="false" aria-controls="mgr">
+    <svg class="icon" aria-hidden="true"><use href="#i-headset"/></svg>
+    <span class="mgr-btn__dot" aria-hidden="true"></span>
+  </button>
+  <section class="mgr" id="mgr" role="dialog" aria-label="Чат с менеджером" hidden>
+    <header class="mgr__head">
+      <span class="mgr__ava" aria-hidden="true">RD</span>
+      <span class="mgr__who"><b>Анна, менеджер</b><small>онлайн · отвечаем за 15 минут</small></span>
+      <button class="mgr__close" id="mgr-close" type="button" aria-label="Закрыть чат"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="mgr__log" id="mgr-log" aria-live="polite"></div>
+    <div class="mgr__quick" id="mgr-quick"></div>
+    <form class="mgr__form" id="mgr-form" autocomplete="off">
+      <input id="mgr-in" aria-label="Ваш ответ" placeholder="Напишите ответ…">
+      <button type="submit" aria-label="Отправить"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg></button>
+    </form>
+  </section>
 
   <script src="script.js"></script>
 </body>
