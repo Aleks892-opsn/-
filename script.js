@@ -663,7 +663,7 @@
   const openChat = () => {
     mgr.hidden = false;
     mgrBtn.setAttribute('aria-expanded', 'true');
-    mgrBtn.classList.add('is-hidden');
+    syncFab();
     if (!chat.started) { chat.started = true; chatAsk(); }
     setTimeout(() => { if (!mgrIn.disabled) mgrIn.focus({ preventScroll: true }); }, 50);
   };
@@ -671,21 +671,50 @@
     if (mgr.hidden) return;
     mgr.hidden = true;
     mgrBtn.setAttribute('aria-expanded', 'false');
-    mgrBtn.classList.remove('is-hidden');
-    mgrBtn.focus({ preventScroll: true });
+    checkOverlap();
+    if (!mgrBtn.classList.contains('is-hidden')) mgrBtn.focus({ preventScroll: true });
   };
   mgrBtn.addEventListener('click', openChat);
   document.getElementById('mgr-close').addEventListener('click', closeChat);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeChat(); });
   document.querySelectorAll('[data-open-chat]').forEach((b) => b.addEventListener('click', openChat));
 
-  // На телефоне в самом конце страницы есть свои кнопки связи — там круглую кнопку прячем
-  const endBar = document.querySelector('.action-bar');
-  if (endBar && 'IntersectionObserver' in window) {
+  // Когда показывать круглую кнопку:
+  // — не на первом экране (там идёт анимация и свои кнопки);
+  // — не когда под ней оказалась кнопка, ссылка, поле или вопрос — чтобы ничего не перекрывать
+  const fabState = { heroGone: false, overlap: false };
+  const INTERACTIVE = 'a, button, input, select, textarea, summary, label, .service, [role="slider"], [tabindex]:not([tabindex="-1"])';
+  const syncFab = () => {
+    const show = fabState.heroGone && !fabState.overlap && mgr.hidden;
+    mgrBtn.classList.toggle('is-hidden', !show);
+  };
+  const checkOverlap = () => {
+    const r = mgrBtn.getBoundingClientRect();
+    const pad = 10;
+    // Сетка 3×3 точек по кнопке с запасом 10px вокруг
+    const xs = [r.left - pad, r.left + r.width / 2, r.right + pad - 1];
+    const ys = [r.top - pad, r.top + r.height / 2, r.bottom + pad - 1];
+    const points = xs.flatMap((x) => ys.map((y) => [x, y]));
+    fabState.overlap = points.some(([x, y]) =>
+      document.elementsFromPoint(x, y).some((el) => !mgrBtn.contains(el) && !mgr.contains(el) && el.closest(INTERACTIVE)));
+    syncFab();
+  };
+  if ('IntersectionObserver' in window) {
     new IntersectionObserver(([entry]) => {
-      if (mgr.hidden) mgrBtn.classList.toggle('is-hidden', entry.isIntersecting);
-    }).observe(endBar);
+      fabState.heroGone = !entry.isIntersecting;
+      checkOverlap();
+    }, { rootMargin: '0px 0px -35% 0px' }).observe(heroEl);
+  } else {
+    fabState.heroGone = true;
   }
+  let fabTick = false;
+  window.addEventListener('scroll', () => {
+    if (fabTick) return;
+    fabTick = true;
+    requestAnimationFrame(() => { fabTick = false; checkOverlap(); });
+  }, { passive: true });
+  window.addEventListener('resize', checkOverlap);
+  checkOverlap();
 
   /* ---------- Год в подвале ---------- */
   document.getElementById('year').textContent = new Date().getFullYear();
