@@ -782,6 +782,12 @@ em { font-style: italic; }
   transition: transform 800ms var(--ease);
 }
 .service.is-flipped .service__inner { transform: rotateY(180deg); }
+/* Safari на iPhone не всегда прячет «спину» стороны, если внутри есть своя анимация
+   (фото с масштабом/обрезкой) — поэтому скрытую сторону гасим ровно на середине поворота */
+.service__front { transition: visibility 0s linear 400ms; }
+.service__back { visibility: hidden; transition: visibility 0s linear 400ms; }
+.service.is-flipped .service__front { visibility: hidden; }
+.service.is-flipped .service__back { visibility: visible; }
 .service__face {
   grid-area: 1 / 1;
   display: flex;
