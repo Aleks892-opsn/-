@@ -635,12 +635,6 @@ em { font-style: italic; }
 .ba-gallery + .ba__meta { --ba-ratio: 16 / 9; width: min(100%, calc(64vh * var(--ba-ratio))); margin-inline: auto; }
 .ba-slides > .ba { grid-area: 1 / 1; opacity: 0; visibility: hidden; transition: opacity 500ms var(--ease), visibility 500ms; }
 .ba-slides > .ba.is-active { opacity: 1; visibility: visible; }
-.ba__before--old {
-  background:
-    linear-gradient(90deg, transparent 0 48%, rgba(0, 0, 0, 0.12) 48% 52%, transparent 52%) 0 0 / 120px 100%,
-    linear-gradient(180deg, #8C8273 0%, #786E60 62%, #5E5548 62.3%, #4F473C 100%);
-}
-.ba__after--alt { filter: hue-rotate(-12deg) brightness(1.05); }
 .ba-arrow {
   position: absolute;
   top: 50%;
@@ -682,30 +676,17 @@ em { font-style: italic; }
   -webkit-user-select: none;
 }
 .ba:focus-visible { outline: 1px solid var(--gold-500); outline-offset: 4px; }
-.ba__before {
+.ba__before { position: absolute; inset: 0; background: var(--ink-700); }
+.ba__after {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 30% 30%, rgba(255, 255, 255, 0.08), transparent),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .48 0 0 0 0 .45 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-    linear-gradient(180deg, #6E6A64 0%, #57534D 62%, #403D38 62.3%, #34312C 100%);
-}
-.ba__after {
-  position: absolute !important;
-  inset: 0;
-  outline: none !important;
   clip-path: inset(0 0 0 var(--bx, 50%));
 }
-.ba__cap {
-  position: absolute;
-  bottom: var(--space-4);
-  max-width: 40%;
-  font-size: 12px;
-  line-height: 1.4;
-  color: rgba(239, 232, 222, 0.7);
-}
-.ba__before .ba__cap { left: var(--space-4); }
-.ba__after .ba__cap { right: var(--space-4); text-align: right; }
+/* Фото «до» и «после» одного размера и кадрирования — совпадают пиксель в пиксель */
+.ba__img, .ba__img img { display: block; width: 100%; height: 100%; }
+.ba__img img { object-fit: cover; object-position: var(--ba-focus, 50%) 50%; pointer-events: none; -webkit-user-drag: none; }
+.ba[data-project="0"] { --ba-focus: 62%; }
+.ba[data-project="1"] { --ba-focus: 40%; }
 .ba__tag {
   position: absolute;
   top: var(--space-4);
