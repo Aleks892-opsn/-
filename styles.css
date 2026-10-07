@@ -951,11 +951,14 @@ em { font-style: italic; }
 .stack { --stack-top: calc(var(--header-h) + var(--space-6)); }
 .stack-card {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: end;
-  gap: var(--space-7);
-  min-height: min(56vh, 460px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-5);
+  min-height: min(52vh, 440px);
+  overflow: hidden;
+  /* Текст занимает левую часть, справа — фото */
+  padding-right: calc(52% + clamp(24px, 4vw, 56px)) !important;
   margin-bottom: var(--space-5);
   padding: clamp(24px, 4vw, 56px);
   background: var(--ink-700);
@@ -973,7 +976,7 @@ em { font-style: italic; }
 .stack-card__idx {
   position: absolute;
   top: clamp(24px, 4vw, 48px);
-  right: clamp(24px, 4vw, 56px);
+  left: clamp(24px, 4vw, 56px);
   font-family: var(--font-display);
   font-size: 22px;
   color: var(--sand-500);
@@ -982,8 +985,9 @@ em { font-style: italic; }
 .stack-card__big {
   font-family: var(--font-display);
   font-weight: 300;
-  font-size: clamp(64px, 10vw, 150px);
+  font-size: clamp(56px, 7.5vw, 112px);
   line-height: 0.9;
+  white-space: nowrap;
   color: var(--gold-500);
   font-variant-numeric: lining-nums;
 }
@@ -999,6 +1003,21 @@ em { font-style: italic; }
   font-weight: 600;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
+}
+.stack-card__photo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 56%;
+  margin: 0;
+}
+.stack-card__photo picture { display: block; height: 100%; }
+.stack-card__photo img { width: 100%; height: 100%; object-fit: cover; }
+/* Фото растворяется в фон карточки со стороны текста (маска прозрачности — без шва на краю) */
+.stack-card__photo {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.45) 22%, #000 50%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.45) 22%, #000 50%);
 }
 .stack-card__text p { max-width: 420px; margin-top: var(--space-3); color: var(--sand-300); font-size: 17px; }
 
@@ -1869,7 +1888,12 @@ em { font-style: italic; }
 
   .services { grid-template-columns: 1fr; }
 
-  .stack-card { grid-template-columns: minmax(0, 1fr); align-content: end; gap: var(--space-5); min-height: 52vh; }
+  /* Телефон: фото полосой сверху, текст под ним */
+  .stack-card { gap: var(--space-4); min-height: 0; padding: 0 var(--space-5) var(--space-6) !important; justify-content: flex-start; }
+  .stack-card__photo { position: relative; width: auto; aspect-ratio: 16 / 9; margin: 0 calc(-1 * var(--space-5)) var(--space-2); }
+  .stack-card__photo { -webkit-mask-image: linear-gradient(0deg, transparent 0%, #000 45%); mask-image: linear-gradient(0deg, transparent 0%, #000 45%); }
+  .stack-card__idx { top: 12px; left: auto; right: 14px; z-index: 1; padding: 2px 10px; background: rgba(14, 13, 12, 0.6); font-size: 16px; color: var(--sand-100); }
+  .stack-card__big { font-size: 56px; }
   .stack-card__text p { font-size: 15px; }
 
   .steps { grid-template-columns: 1fr; row-gap: var(--space-6); padding-left: var(--space-1); }
