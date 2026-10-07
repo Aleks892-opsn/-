@@ -491,6 +491,12 @@ em { font-style: italic; }
   object-fit: cover;
   object-position: 62% 55%;
 }
+/* Живое фото: script.js двигает его на несколько пикселей (наклон телефона или мышь),
+   запас по краям даёт scale */
+.js-anim .hero__img {
+  transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(1.08);
+  will-change: transform;
+}
 .hero__media::before {
   content: "";
   position: absolute;
@@ -1640,6 +1646,69 @@ em { font-style: italic; }
 .form input:focus { outline: none; border-color: var(--gold-500); }
 .form input.is-invalid { border-color: var(--error); }
 .form__error { color: var(--error); font-size: 12px; }
+.form__label {
+  color: var(--sand-300);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+.form__label small { margin-left: 6px; color: var(--sand-500); font-weight: 500; letter-spacing: 0; text-transform: none; }
+
+/* Фото комнаты в заявке */
+.photo-pick { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.photo-pick__btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 52px;
+  padding-inline: var(--space-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: rgba(201, 162, 104, 0.04);
+  color: var(--sand-100);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--t-fast), background-color var(--t-fast);
+}
+.photo-pick__btn:hover,
+.photo-pick__btn:focus-within { border-color: var(--gold-500); background: rgba(201, 162, 104, 0.09); }
+.photo-pick__btn--main { border-style: solid; border-color: var(--gold-500); }
+.photo-pick__btn .icon { width: 18px; height: 18px; color: var(--gold-500); }
+.photo-pick__btn input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.photo-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: var(--space-2); }
+.photo-thumbs:empty { display: none; }
+.photo-thumbs li { position: relative; aspect-ratio: 1; overflow: hidden; border: var(--hairline); animation: photo-in 300ms var(--ease); }
+.photo-thumbs img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.photo-thumbs button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: start end;
+  width: 44px;
+  height: 44px;
+  padding: 4px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.photo-thumbs button span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(14, 13, 12, 0.8);
+  color: var(--sand-100);
+  font-size: 11px;
+}
+.photo-note { display: flex; justify-content: space-between; gap: var(--space-3); color: var(--sand-500); font-size: 12px; line-height: 1.5; }
+.photo-note b { color: var(--gold-500); font-weight: 600; white-space: nowrap; }
+@keyframes photo-in { from { opacity: 0; transform: scale(0.9); } }
 .form__error:empty { display: none; }
 
 .checkbox {

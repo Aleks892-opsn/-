@@ -173,6 +173,58 @@
     setTimeout(play, 600);
   }
 
+  // Живое фото первого экрана: на телефоне сдвигается при наклоне, на компьютере — за мышью.
+  // На iPhone датчик доступен только после разрешения: спрашиваем при первом касании фото
+  if (animOn) {
+    const heroImg = heroEl.querySelector('.hero__img');
+    const RANGE = 14;
+    let tx = 0, ty = 0, gx = 0, gy = 0, raf = null, heroVisible = true;
+    const loop = () => {
+      tx += (gx - tx) * 0.1;
+      ty += (gy - ty) * 0.1;
+      heroImg.style.setProperty('--tx', tx.toFixed(2) + 'px');
+      heroImg.style.setProperty('--ty', ty.toFixed(2) + 'px');
+      raf = Math.abs(gx - tx) > 0.05 || Math.abs(gy - ty) > 0.05 ? requestAnimationFrame(loop) : null;
+    };
+    const aim = (x, y) => {
+      if (!heroVisible) return;
+      gx = Math.max(-1, Math.min(1, x)) * RANGE;
+      gy = Math.max(-1, Math.min(1, y)) * RANGE;
+      if (!raf) raf = requestAnimationFrame(loop);
+    };
+    new IntersectionObserver(([en]) => { heroVisible = en.isIntersecting; }).observe(heroEl);
+
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      heroEl.addEventListener('pointermove', (e) => {
+        aim(-(e.clientX / innerWidth * 2 - 1), -(e.clientY / innerHeight * 2 - 1));
+      });
+      heroEl.addEventListener('pointerleave', () => aim(0, 0));
+    } else if ('DeviceOrientationEvent' in window) {
+      // Нулём считаем то, как человек держит телефон, и медленно подстраиваемся под новое положение
+      let b0 = null, g0 = null;
+      const onTilt = (e) => {
+        if (e.beta == null || e.gamma == null) return;
+        if (b0 === null) { b0 = e.beta; g0 = e.gamma; }
+        b0 += (e.beta - b0) * 0.02;
+        g0 += (e.gamma - g0) * 0.02;
+        aim(-(e.gamma - g0) / 15, -(e.beta - b0) / 15);
+      };
+      const DOE = window.DeviceOrientationEvent;
+      if (typeof DOE.requestPermission === 'function') {
+        const ask = (e) => {
+          if (e.target.closest('a, button')) return;
+          heroEl.removeEventListener('click', ask);
+          DOE.requestPermission()
+            .then((state) => { if (state === 'granted') window.addEventListener('deviceorientation', onTilt); })
+            .catch(() => {});
+        };
+        heroEl.addEventListener('click', ask);
+      } else {
+        window.addEventListener('deviceorientation', onTilt);
+      }
+    }
+  }
+
   if (animOn) {
     let sceneTick = false;
     window.addEventListener('scroll', () => {
@@ -522,6 +574,37 @@
     if (consent.checked) setError(consent, '');
   });
 
+  // Фото комнаты: до 10 штук, превью с крестиком
+  const PHOTO_MAX = 10;
+  const photos = [];
+  const thumbs = document.getElementById('lead-thumbs');
+  const phCount = document.getElementById('lead-ph-count');
+  const renderPhotos = () => {
+    thumbs.innerHTML = photos.map((p, i) => `<li><img src="${p.url}" alt="Фото комнаты ${i + 1}"><button type="button" data-i="${i}" aria-label="Удалить фото ${i + 1}"><span aria-hidden="true">✕</span></button></li>`).join('');
+    phCount.hidden = !photos.length;
+    phCount.textContent = `${photos.length} из ${PHOTO_MAX}`;
+  };
+  const clearPhotos = () => {
+    photos.splice(0).forEach((p) => URL.revokeObjectURL(p.url));
+    renderPhotos();
+  };
+  form.querySelectorAll('[data-photos]').forEach((input) => {
+    input.addEventListener('change', () => {
+      [...input.files].forEach((file) => {
+        if (photos.length < PHOTO_MAX && file.type.startsWith('image/')) photos.push({ file, url: URL.createObjectURL(file) });
+      });
+      input.value = '';
+      renderPhotos();
+    });
+  });
+  thumbs.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const [p] = photos.splice(Number(btn.dataset.i), 1);
+    URL.revokeObjectURL(p.url);
+    renderPhotos();
+  });
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     status.textContent = '';
@@ -546,7 +629,9 @@
     }
 
     // TODO: подключите отправку заявки (CRM, Telegram-бот, почта и т.п.)
-    // fetch('/api/lead', { method: 'POST', body: new FormData(form) })
+    // const data = new FormData(form);
+    // photos.forEach((p) => data.append('photos', p.file));
+    // fetch('/api/lead', { method: 'POST', body: data })
     const btn = form.querySelector('button[type="submit"]');
     const btnHtml = btn.innerHTML;
     btn.disabled = true;
@@ -554,6 +639,7 @@
 
     setTimeout(() => {
       form.reset();
+      clearPhotos();
       btn.disabled = false;
       btn.innerHTML = btnHtml;
       status.textContent = 'Спасибо! Мы перезвоним вам в течение 15 минут.';

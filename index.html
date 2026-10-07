@@ -778,6 +778,24 @@
               <input id="lead-area" name="area" type="number" min="10" max="1000" inputmode="numeric" placeholder="60">
               <span class="form__error" data-for="lead-area"></span>
             </div>
+            <!-- Фото комнаты: «Снять» сразу открывает камеру телефона, «Из галереи» — выбор готовых фото -->
+            <div class="form__field">
+              <span class="form__label" id="lead-photos-label">Фото комнаты <small>по желанию</small></span>
+              <div class="photo-pick" role="group" aria-labelledby="lead-photos-label">
+                <label class="photo-pick__btn photo-pick__btn--main">
+                  <input type="file" accept="image/*" capture="environment" data-photos>
+                  <svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg>
+                  Снять
+                </label>
+                <label class="photo-pick__btn">
+                  <input type="file" accept="image/*" multiple data-photos>
+                  <svg class="icon" aria-hidden="true"><use href="#i-image"/></svg>
+                  Из галереи
+                </label>
+              </div>
+              <ul class="photo-thumbs" id="lead-thumbs" aria-label="Выбранные фото"></ul>
+              <p class="photo-note">Прораб посмотрит фото и назовёт цену точнее <b id="lead-ph-count" hidden></b></p>
+            </div>
             <label class="checkbox">
               <input type="checkbox" id="lead-consent" name="consent" required>
               <span class="checkbox__box" aria-hidden="true"></span>
