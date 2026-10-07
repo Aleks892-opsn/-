@@ -10,21 +10,25 @@
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  /* ---------- Мобильное меню ---------- */
+  /* ---------- Мобильное меню-шторка ---------- */
   const burger = document.getElementById('burger');
-  const nav = document.getElementById('nav');
+  const sheet = document.getElementById('msheet');
+  const sheetScrim = document.getElementById('msheet-scrim');
 
   const setMenu = (open) => {
     burger.setAttribute('aria-expanded', String(open));
     burger.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
-    nav.classList.toggle('is-open', open);
+    sheet.setAttribute('aria-hidden', String(!open));
+    sheet.inert = !open;
+    sheet.style.removeProperty('--dy');
     document.body.classList.toggle('menu-open', open);
   };
 
   burger.addEventListener('click', () => {
     setMenu(burger.getAttribute('aria-expanded') !== 'true');
   });
-  nav.addEventListener('click', (e) => {
+  sheetScrim.addEventListener('click', () => setMenu(false));
+  sheet.addEventListener('click', (e) => {
     if (e.target.closest('a')) setMenu(false);
   });
   document.addEventListener('keydown', (e) => {
@@ -33,6 +37,31 @@
   window.matchMedia('(min-width: 1101px)').addEventListener('change', (e) => {
     if (e.matches) setMenu(false);
   });
+
+  // Свайп вниз закрывает шторку (тянуть можно за любое место, кроме ссылок и кнопок)
+  let sheetY = null;
+  let sheetDy = 0;
+  sheet.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('a, button')) return;
+    sheetY = e.clientY;
+    sheetDy = 0;
+    sheet.classList.add('is-drag');
+    sheet.setPointerCapture(e.pointerId);
+  });
+  sheet.addEventListener('pointermove', (e) => {
+    if (sheetY === null) return;
+    sheetDy = Math.max(0, e.clientY - sheetY);
+    sheet.style.setProperty('--dy', sheetDy + 'px');
+  });
+  const endSheetDrag = () => {
+    if (sheetY === null) return;
+    sheetY = null;
+    sheet.classList.remove('is-drag');
+    if (sheetDy > 90) setMenu(false);
+    else sheet.style.setProperty('--dy', '0px');
+  };
+  sheet.addEventListener('pointerup', endSheetDrag);
+  sheet.addEventListener('pointercancel', endSheetDrag);
 
   /* ---------- Подсветка активного пункта меню ---------- */
   const navLinks = [...document.querySelectorAll('.nav__list a')];
@@ -174,12 +203,66 @@
       ba.setAttribute('aria-valuenow', String(Math.round(v)));
     };
 
+    // Точки на фото «стало»: координаты заданы в процентах кадра (1280×714),
+    // а фото обрезается под окно (object-fit: cover), поэтому пересчитываем их под текущий размер
+    const IMG_W = 1280;
+    const IMG_H = 714;
+    const placeSpots = (ba) => {
+      const w = ba.clientWidth;
+      const h = ba.clientHeight;
+      if (!w || !h) return;
+      const k = Math.max(w / IMG_W, h / IMG_H);
+      const rw = IMG_W * k;
+      const rh = IMG_H * k;
+      const focus = parseFloat(getComputedStyle(ba).getPropertyValue('--ba-focus')) / 100 || 0.5;
+      ba.querySelectorAll('.ba-spot').forEach((spot) => {
+        const x = (w - rw) * focus + (spot.dataset.x / 100) * rw;
+        const y = (h - rh) / 2 + (spot.dataset.y / 100) * rh;
+        spot.style.setProperty('--sx', x + 'px');
+        spot.style.setProperty('--sy', y + 'px');
+        spot.hidden = x < 0 || x > w || y < 0 || y > h;
+      });
+    };
+    const closeSpot = (ba) => {
+      ba.querySelector('.ba-card').classList.remove('is-open');
+      ba.querySelectorAll('.ba-spot.is-on').forEach((s) => s.classList.remove('is-on'));
+    };
+    const openSpot = (ba, spot) => {
+      const card = ba.querySelector('.ba-card');
+      if (spot.classList.contains('is-on')) { closeSpot(ba); return; }
+      closeSpot(ba);
+      spot.classList.add('is-on');
+      card.querySelector('.ba-card__t').textContent = spot.dataset.t;
+      card.querySelector('.ba-card__h').textContent = spot.dataset.h;
+      card.querySelector('.ba-card__p').textContent = spot.dataset.p;
+      card.classList.add('is-open');
+    };
+    slides.forEach((ba) => {
+      placeSpots(ba);
+      ba.querySelectorAll('.ba-spot').forEach((spot) => {
+        spot.addEventListener('click', () => openSpot(ba, spot));
+      });
+      ba.querySelector('.ba-card__x').addEventListener('click', () => closeSpot(ba));
+    });
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver((entries) => entries.forEach((en) => placeSpots(en.target)));
+      slides.forEach((ba) => ro.observe(ba));
+    } else {
+      window.addEventListener('resize', () => slides.forEach(placeSpots));
+    }
+
     slides.forEach((ba) => {
       const fromPointer = (e) => {
         const r = ba.getBoundingClientRect();
         setBA(ba, ((e.clientX - r.left) / r.width) * 100);
       };
-      ba.addEventListener('pointerdown', (e) => { dragging = true; ba.setPointerCapture(e.pointerId); fromPointer(e); });
+      ba.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('.ba-spot, .ba-card')) return;
+        closeSpot(ba);
+        dragging = true;
+        ba.setPointerCapture(e.pointerId);
+        fromPointer(e);
+      });
       ba.addEventListener('pointermove', (e) => { if (dragging) fromPointer(e); });
       ba.addEventListener('pointerup', () => { dragging = false; });
       ba.addEventListener('pointercancel', () => { dragging = false; });
@@ -208,6 +291,7 @@
       current = (i + slides.length) % slides.length;
       slides.forEach((ba, k) => {
         const on = k === current;
+        closeSpot(ba);
         ba.classList.toggle('is-active', on);
         ba.setAttribute('aria-hidden', String(!on));
         ba.tabIndex = on ? 0 : -1;

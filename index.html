@@ -87,12 +87,33 @@
           <svg class="icon" aria-hidden="true"><use href="#i-headset"/></svg>
           <span class="header__support-dot" aria-hidden="true"></span>
         </button>
-        <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
+        <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="msheet">
           <span></span><span></span><span></span>
         </button>
       </div>
     </div>
   </header>
+
+  <!-- Мобильное меню-шторка: выезжает снизу, закрывается свайпом вниз или тапом по фону -->
+  <div class="msheet-scrim" id="msheet-scrim"></div>
+  <div class="msheet" id="msheet" role="dialog" aria-modal="true" aria-label="Меню" aria-hidden="true" inert>
+    <span class="msheet__handle" aria-hidden="true"></span>
+    <nav aria-label="Меню сайта">
+      <a href="#services">Услуги <small>4 формата</small></a>
+      <a href="#steps">Этапы <small>60 дней</small></a>
+      <a href="#portfolio">Было / стало <small>2 проекта</small></a>
+      <a href="#calc">Расчёт стоимости <small>3 шага</small></a>
+      <a href="#reviews">Отзывы <small>6 отзывов</small></a>
+      <a href="#faq">Вопросы <small>8 ответов</small></a>
+    </nav>
+    <div class="msheet__acts">
+      <a href="tel:+79000000000" class="btn btn--outline">
+        <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
+        Позвонить
+      </a>
+      <a href="#calc" class="btn btn--primary">Рассчитать</a>
+    </div>
+  </div>
 
   <main id="main">
 
@@ -347,10 +368,19 @@
                   <source srcset="images/ba1-after.webp" type="image/webp">
                   <img src="images/ba1-after.jpg" width="1280" height="714" alt="ЖК «Символ», та же гостиная после дизайнерского ремонта: паркет ёлочкой, шторы, диван" loading="lazy" decoding="async" draggable="false">
                 </picture>
+                <button class="ba-spot" type="button" data-x="72" data-y="33" data-t="Шторы" data-h="Скрытый карниз в потолке" data-p="Нишу под карниз закладываем ещё на этапе потолков — шторы идут от самого верха." aria-label="Шторы: Скрытый карниз в потолке"></button>
+                <button class="ba-spot" type="button" data-x="69" data-y="70" data-t="Пол" data-h="Паркет ёлочкой, дуб" data-p="Укладка на клей по выровненной стяжке, покрытие маслом." aria-label="Пол: Паркет ёлочкой, дуб"></button>
+                <button class="ba-spot" type="button" data-x="66" data-y="16" data-t="Свет" data-h="Точечные светильники" data-p="Ровный потолок без перепадов, тёплый свет 3000 K." aria-label="Свет: Точечные светильники"></button>
               </div>
               <span class="ba__tag ba__tag--l">Было</span>
               <span class="ba__tag ba__tag--r">Стало</span>
               <div class="ba__handle"><span class="ba__knob" aria-hidden="true">⟷</span></div>
+              <div class="ba-card" aria-live="polite">
+                <button class="ba-card__x" type="button" aria-label="Закрыть">✕</button>
+                <b class="ba-card__t"></b>
+                <h3 class="ba-card__h"></h3>
+                <p class="ba-card__p"></p>
+              </div>
             </div>
             <div class="ba" data-project="1" tabindex="-1" role="slider" aria-label="Хамовники: сравнение до и после ремонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-hidden="true">
               <div class="ba__before">
@@ -364,10 +394,19 @@
                   <source srcset="images/ba2-after.webp" type="image/webp">
                   <img src="images/ba2-after.jpg" width="1280" height="714" alt="Хамовники, та же комната после капитального ремонта: ровные стены, паркетная доска, новое окно" loading="lazy" decoding="async" draggable="false">
                 </picture>
+                <button class="ba-spot" type="button" data-x="60" data-y="33" data-t="Стены" data-h="Выравнивание под покраску" data-p="Штукатурка по маякам, шпаклёвка и моющаяся краска." aria-label="Стены: Выравнивание под покраску"></button>
+                <button class="ba-spot" type="button" data-x="55" data-y="17" data-t="Потолок" data-h="Молдинг и точечный свет" data-p="Новая проводка по всей квартире, светильники встроены в потолок." aria-label="Потолок: Молдинг и точечный свет"></button>
+                <button class="ba-spot" type="button" data-x="57" data-y="88" data-t="Пол" data-h="Паркетная доска, дуб" data-p="Стяжка заново, шумоизоляция, плинтус в цвет стен." aria-label="Пол: Паркетная доска, дуб"></button>
               </div>
               <span class="ba__tag ba__tag--l">Было</span>
               <span class="ba__tag ba__tag--r">Стало</span>
               <div class="ba__handle"><span class="ba__knob" aria-hidden="true">⟷</span></div>
+              <div class="ba-card" aria-live="polite">
+                <button class="ba-card__x" type="button" aria-label="Закрыть">✕</button>
+                <b class="ba-card__t"></b>
+                <h3 class="ba-card__h"></h3>
+                <p class="ba-card__p"></p>
+              </div>
             </div>
           </div>
           <button class="ba-arrow ba-arrow--prev" id="ba-prev" type="button" aria-label="Предыдущий проект"><svg class="icon" aria-hidden="true"><use href="#i-chev-l"/></svg></button>
