@@ -974,7 +974,8 @@ em { font-style: italic; }
 }
 .stack-card__big small {
   display: block;
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
+  line-height: 1.4;
   font-family: var(--font-body);
   font-size: var(--fs-small);
   color: var(--sand-300);
@@ -1000,7 +1001,12 @@ em { font-style: italic; }
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.45) 22%, #000 50%);
   mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.45) 22%, #000 50%);
 }
-.stack-card__text p { max-width: 420px; margin-top: var(--space-3); color: var(--sand-300); font-size: 17px; }
+.stack-card__text {
+  max-width: 440px;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+.stack-card__text p { max-width: 420px; margin-top: var(--space-3); color: var(--sand-300); font-size: 17px; line-height: 1.6; }
 
 /* ---------- 6. Калькулятор: квиз ---------- */
 .quiz {
@@ -1870,12 +1876,13 @@ em { font-style: italic; }
   .services { grid-template-columns: 1fr; }
 
   /* Телефон: фото полосой сверху, текст под ним */
-  .stack-card { gap: var(--space-4); min-height: 0; padding: 0 var(--space-5) var(--space-6) !important; justify-content: flex-start; }
-  .stack-card__photo { position: relative; width: auto; aspect-ratio: 16 / 9; margin: 0 calc(-1 * var(--space-5)) var(--space-2); }
+  .stack-card { gap: var(--space-5); min-height: 0; padding: 0 var(--space-5) var(--space-7) !important; justify-content: flex-start; }
+  .stack-card__photo { position: relative; width: auto; aspect-ratio: 16 / 9; margin: 0 calc(-1 * var(--space-5)) 0; }
   .stack-card__photo { -webkit-mask-image: linear-gradient(0deg, transparent 0%, #000 45%); mask-image: linear-gradient(0deg, transparent 0%, #000 45%); }
   .stack-card__idx { top: 12px; left: auto; right: 14px; z-index: 1; padding: 2px 10px; background: rgba(14, 13, 12, 0.6); font-size: 16px; color: var(--sand-100); }
   .stack-card__big { font-size: 56px; }
-  .stack-card__text p { font-size: 15px; }
+  .stack-card__text { padding-top: var(--space-4); }
+  .stack-card__text p { margin-top: var(--space-2); font-size: 15px; }
 
   .steps { grid-template-columns: 1fr; row-gap: var(--space-6); padding-left: var(--space-1); }
   .steps::before { display: block; left: 4px; right: auto; top: 0; bottom: 0; width: 1px; height: auto; }
