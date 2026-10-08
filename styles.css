@@ -2024,7 +2024,7 @@ em { font-style: italic; }
     background: linear-gradient(180deg, rgba(14, 13, 12, 0.55) 0%, rgba(14, 13, 12, 0.88) 55%, var(--ink-900) 100%);
   }
   .hero__facts { grid-template-columns: repeat(2, 1fr); }
-  .js-anim .hero__media::before { background: linear-gradient(180deg, rgba(14, 13, 12, 0.35) 0%, rgba(14, 13, 12, 0.85) 55%, var(--ink-900) 100%); }
+  .js-anim .hero__media::before { background: linear-gradient(180deg, rgba(14, 13, 12, 0.15) 0%, rgba(14, 13, 12, 0.7) 55%, var(--ink-900) 100%); }
   .stack { --stack-top: 10vh; }
   .ba { aspect-ratio: 4 / 5; }
   .ba-gallery, .ba-gallery + .ba__meta { --ba-ratio: 4 / 5; }
