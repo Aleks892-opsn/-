@@ -734,15 +734,112 @@
     });
   });
 
-  /* ---------- Чат с менеджером ---------- */
+  /* ---------- Чат с менеджером: Анна отвечает на вопросы о ремонте ---------- */
+  // Ответы собраны из текстов сайта (цены, сроки, FAQ, этапы). Вопрос сопоставляется с темами
+  // по ключевым словам; если тема не нашлась — Анна предлагает оставить номер для звонка прораба.
   const mgrBtn = document.getElementById('mgr-btn');
   const mgr = document.getElementById('mgr');
   const mgrLog = document.getElementById('mgr-log');
   const mgrQuick = document.getElementById('mgr-quick');
   const mgrForm = document.getElementById('mgr-form');
   const mgrIn = document.getElementById('mgr-in');
-  const chat = { step: 0, name: '', phone: '', area: '', started: false };
-  const typingDelay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 800;
+  const typingDelay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900;
+
+  const PRICES = [
+    ['Косметический', 6000, 'от 25 дней'],
+    ['Капитальный', 14000, 'от 50 дней'],
+    ['Новостройка', 11000, 'от 45 дней'],
+    ['Дизайнерский', 22000, 'от 60 дней'],
+  ];
+  const money = (n) => Math.round(n / 1000).toLocaleString('ru-RU') + ' тыс. ₽';
+  const CALL = 'Оставить номер';
+
+  const TOPICS = [
+    { id: 'price', keys: ['цен', 'стоим', 'сколько стоит', 'почем', 'бюджет', 'дорог', 'расцен', 'прайс', 'за метр', 'за квадрат', 'смету посчит', 'посчитай', 'рассчит'],
+      a: 'Цены за м² (работы под ключ):\n• косметический — от 6 000 ₽\n• новостройка — от 11 000 ₽\n• капитальный — от 14 000 ₽\n• дизайнерский — от 22 000 ₽\nНапишите площадь квартиры, например «54 м²», — посчитаю примерно.',
+      chips: ['Сроки ремонта', 'Что с материалами?', CALL], area: true },
+    { id: 'types', keys: ['какой ремонт', 'тип ремонта', 'вид ремонта', 'какой выбрать', 'что выбрать', 'чем отлича', 'разниц', 'косметическ', 'капитальн', 'дизайнерск'],
+      a: 'Коротко о форматах:\n• косметический — освежить стены, полы, двери без замены инженерии\n• капитальный — всё с нуля, включая проводку и трубы\n• новостройка — от бетона или white box до готовой квартиры\n• дизайнерский — капитальный + дизайн-проект и комплектация\nТочно подскажем на бесплатном замере.',
+      chips: ['Сколько стоит?', 'Сроки ремонта', CALL] },
+    { id: 'time', keys: ['срок', 'сколько времени', 'долго', 'сколько дней', 'месяц', 'быстро', 'когда закончи', 'за сколько'],
+      a: 'Ремонт под ключ с дизайн-проектом — в среднем 60 дней для квартиры до 80 м². Косметический — от 25 дней, новостройка — от 45, капитальный — от 50. Точный срок пишем в договоре, за каждый день просрочки по нашей вине платим неустойку.',
+      chips: ['Сколько стоит?', 'Как идёт оплата?', CALL] },
+    { id: 'estimate', keys: ['смета', 'смету', 'сметы', 'доплат', 'подорож', 'вырастет', 'изменит', 'скрыт', 'сюрприз'],
+      a: 'Смета фиксируется в договоре и не меняется, если вы не меняете объём работ. Если захотите что-то добавить — например, тёплый пол, — оформим допсоглашение только с вашей подписью. Доплат сверх сметы — 0 ₽.',
+      chips: ['Какой договор?', 'Гарантия', CALL] },
+    { id: 'materials', keys: ['материал', 'закуп', 'чернов', 'чистов', 'ламинат', 'обои', 'краск', 'паркет', 'покупать'],
+      a: 'Как вам удобнее. Черновые материалы закупаем мы — с оптовыми скидками до 20% и отчётом по чекам. Чистовые можно выбрать вместе с дизайнером в салонах-партнёрах или купить самим.',
+      chips: ['Сколько стоит?', 'Дизайн-проект', CALL] },
+    { id: 'contract', keys: ['договор', 'юрид', 'документ', 'официальн'],
+      a: 'Заключаем официальный договор подряда с юрлицом. В нём — смета, сроки, этапы оплаты, гарантия 3 года и ответственность сторон. Образец можем прислать заранее — оставьте номер или мессенджер.',
+      chips: ['Как идёт оплата?', 'Гарантия', CALL] },
+    { id: 'pay', keys: ['оплат', 'рассроч', 'кредит', 'аванс', 'предоплат', 'платить', 'заплатить', 'карт', 'налич'],
+      a: 'Оплата по этапам: платите только за то, что уже сделано и принято вами, всего 5 этапов. Есть рассрочка через банки-партнёры до 24 месяцев — условия зависят от банка.',
+      chips: ['Сроки ремонта', 'Какой договор?', CALL] },
+    { id: 'warranty', keys: ['гарант', 'сломает', 'трещин', 'отвалит', 'брак', 'переделать'],
+      a: 'Гарантия 3 года на все работы по договору. Если что-то случится — приедем и устраним за наш счёт.',
+      chips: ['Какой договор?', 'Сколько стоит?', CALL] },
+    { id: 'live', keys: ['жить', 'проживан', 'переехать', 'съехать', 'с детьми', 'живем'],
+      a: 'При косметическом ремонте жить можно — работаем по комнатам. При капитальном лучше переехать на время черновых работ: будет шумно и пыльно.',
+      chips: ['Сроки ремонта', 'Шум и соседи', CALL] },
+    { id: 'report', keys: ['фото', 'отчет', 'контрол', 'узнаю', 'проверить', 'следить', 'приезжать'],
+      a: 'Прораб каждый день присылает фотоотчёт в WhatsApp или Telegram, а каждый этап вы принимаете лично на объекте. Приезжать каждый день не нужно.',
+      chips: ['Кто прораб?', 'Как идёт оплата?', CALL] },
+    { id: 'foreman', keys: ['прораб', 'бригад', 'мастер', 'рабочи', 'кто будет делать', 'субподряд', 'гастарбайт'],
+      a: 'У каждого объекта свой прораб — он на связи с вами от замера до сдачи. Работает своя бригада, не субподрядчики с улицы.',
+      chips: ['Фотоотчёты', 'Гарантия', CALL] },
+    { id: 'measure', keys: ['замер', 'выезд', 'обмер', 'приехать посмотр', 'посмотреть квартир', 'осмотр'],
+      a: 'Замер бесплатный: приедем в удобный день, сделаем обмеры и обсудим пожелания. Предварительную смету даём в день замера, это ни к чему не обязывает.',
+      chips: [CALL, 'Сколько стоит?'] },
+    { id: 'design', keys: ['дизайн', '3d', 'визуал', 'проект', 'планиров', 'чертеж', 'стиль'],
+      a: 'Дизайн-проект — это планировка, 3D-визуализация, чертежи и подбор материалов. В дизайнерском ремонте (от 22 000 ₽/м²) он уже входит в стоимость.',
+      chips: ['Сколько стоит?', 'Перепланировка', CALL] },
+    { id: 'newbuild', keys: ['новострой', 'бетон', 'white box', 'вайт бокс', 'предчистов', 'от застройщик', 'без отделки', 'черновая отделка'],
+      a: 'С новостройками работаем постоянно: от бетона или white box до готовой квартиры. Цена — от 11 000 ₽/м², срок — от 45 дней.',
+      chips: ['Посчитать по площади', 'Что с материалами?', CALL] },
+    { id: 'replan', keys: ['переплан', 'снести', 'стену', 'стены', 'объедин', 'согласов', 'мжи', 'бти'],
+      a: 'Перепланировку обсудим на замере: подскажем, что можно сделать, и поможем подготовить проект для согласования. Несущие стены не трогаем.',
+      chips: ['Дизайн-проект', CALL] },
+    { id: 'rooms', keys: ['ванн', 'санузел', 'туалет', 'кухн', 'одну комнат', 'только комнат', 'плитк', 'душев'],
+      a: 'Берём и отдельные помещения — санузел, кухню, комнату. Цена зависит от площади и материалов, точную назовём после бесплатного замера.',
+      chips: ['Сколько стоит?', 'Сроки ремонта', CALL] },
+    { id: 'engineering', keys: ['электр', 'проводк', 'розет', 'сантехн', 'труб', 'стояк', 'отоплен', 'батаре', 'кондицион', 'теплый пол'],
+      a: 'Электрику и сантехнику делаем полностью: новая проводка, разводка труб, тёплые полы, подготовка под кондиционеры. Всё — по проекту и с гарантией 3 года.',
+      chips: ['Сколько стоит?', 'Гарантия', CALL] },
+    { id: 'noise', keys: ['шум', 'сосед', 'выходн', 'ночью', 'вечером', 'тишин'],
+      a: 'Шумные работы ведём только в разрешённое время по правилам дома, обычно по будням днём. Соседей предупреждаем заранее.',
+      chips: ['Сроки ремонта', CALL] },
+    { id: 'clean', keys: ['уборк', 'клининг', 'мусор', 'вывоз', 'грязь', 'пыль'],
+      a: 'Вывоз мусора по ходу работ и клининг после ремонта входят в стоимость. Квартиру сдаём чистой — с актом и гарантийным талоном.',
+      chips: ['Гарантия', CALL] },
+    { id: 'where', keys: ['москв', 'област', 'подмосков', 'район', 'город', 'где вы', 'адрес', 'офис', 'выезжаете'],
+      a: 'Работаем по Москве и ближнему Подмосковью. Офис: г. Москва, ул. Примерная, д. 1, офис 101, ежедневно 9:00–21:00.',
+      chips: ['Бесплатный замер', CALL] },
+    { id: 'discount', keys: ['скидк', 'акци', 'дешевле', 'подешевле', 'торг'],
+      a: 'На черновые материалы у нас оптовые скидки до 20% — эта экономия остаётся вам. По работам цену фиксируем в договоре, а персональные условия обсудим на замере.',
+      chips: ['Сколько стоит?', CALL] },
+    { id: 'bot', keys: ['бот', 'робот', 'живой', 'человек', 'нейросет', 'ты кто', 'вы кто'],
+      a: 'Я Анна, помощник студии. На частые вопросы отвечаю сразу, а всё, что требует осмотра квартиры, передаю прорабу — он перезвонит.',
+      chips: ['Сколько стоит?', CALL] },
+    { id: 'thanks', weak: true, keys: ['спасиб', 'благодар', 'понятно', 'ясно', 'хорошо', 'отлично', 'супер'],
+      a: 'Пожалуйста! Если появятся вопросы — пишите. А если удобнее голосом, оставьте номер, и я перезвоню.',
+      chips: [CALL, 'Сколько стоит?'] },
+    { id: 'hello', weak: true, keys: ['привет', 'здравств', 'добрый', 'доброе', 'хай', 'алло'],
+      a: 'Здравствуйте! Спрашивайте — про цены, сроки, договор, материалы или как проходит ремонт.',
+      chips: ['Сколько стоит?', 'Сроки ремонта', CALL] },
+    { id: 'call', keys: ['позвон', 'перезвон', 'звонок', 'созвон', 'связаться', 'консультац', 'оставить номер', 'мой номер', 'менеджер'],
+      a: '', call: true },
+  ];
+  // Подписи кнопок-подсказок, у которых текст не совпадает с ключами темы
+  const CHIP_TOPIC = {
+    'Сколько стоит?': 'price', 'Посчитать по площади': 'price', 'Сроки ремонта': 'time', 'Что с материалами?': 'materials',
+    'Какой договор?': 'contract', 'Как идёт оплата?': 'pay', 'Гарантия': 'warranty', 'Шум и соседи': 'noise',
+    'Кто прораб?': 'foreman', 'Фотоотчёты': 'report', 'Дизайн-проект': 'design', 'Перепланировка': 'replan',
+    'Бесплатный замер': 'measure', 'Что входит в смету?': 'estimate',
+  };
+  const START_CHIPS = ['Сколько стоит?', 'Сроки ремонта', 'Что входит в смету?', 'Гарантия', CALL];
+
+  const chat = { started: false, mode: 'qa', name: '', phone: '', awaitArea: false, answered: 0, sent: false };
 
   const say = (text, who) => {
     const m = document.createElement('div');
@@ -757,84 +854,173 @@
     t.innerHTML = '<i></i><i></i><i></i>';
     mgrLog.appendChild(t);
     mgrLog.scrollTop = mgrLog.scrollHeight;
-    setTimeout(() => { t.remove(); say(text, 'bot'); if (then) then(); }, typingDelay);
+    // Длинный ответ «печатается» чуть дольше
+    const delay = typingDelay ? Math.min(1800, typingDelay + text.length * 4) : 0;
+    setTimeout(() => { t.remove(); say(text, 'bot'); if (then) then(); }, delay);
   };
   const quickReplies = (list) => {
     mgrQuick.innerHTML = '';
     list.forEach((label) => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'mgr__chip';
+      b.className = 'mgr__chip' + (label === CALL ? ' mgr__chip--call' : '');
       b.textContent = label;
-      b.addEventListener('click', () => chatAnswer(label));
+      b.addEventListener('click', () => onUser(label));
       mgrQuick.appendChild(b);
     });
+    // Подсказки занимают место снизу — докручиваем переписку до последнего ответа
+    mgrLog.scrollTop = mgrLog.scrollHeight;
   };
-  const chatAsk = () => {
-    if (chat.step === 0) {
-      botSay('Здравствуйте! Я Анна из REMONT DESIGN. Как к вам обращаться?');
-      mgrIn.type = 'text';
-      mgrIn.placeholder = 'Ваше имя';
-    } else if (chat.step === 1) {
-      botSay(chat.name + ', очень приятно! Оставьте телефон — пришлю расчёт и перезвоню.');
-      mgrIn.type = 'tel';
-      mgrIn.inputMode = 'tel';
-      mgrIn.placeholder = '+7 (___) ___-__-__';
-    } else if (chat.step === 2) {
-      botSay('Отлично. Какая площадь квартиры?', () => quickReplies(['до 40 м²', '40–60 м²', '60–80 м²', '80–100 м²', 'больше 100 м²']));
-      mgrIn.type = 'text';
-      mgrIn.inputMode = 'text';
-      mgrIn.placeholder = 'Или напишите своё';
-    } else if (chat.step === 3) {
-      mgrIn.disabled = true;
-      botSay('Почти готово! Подтвердите согласие на обработку данных, и я передам заявку.', () => {
-        mgrQuick.innerHTML = '<label class="mgr__consent"><input type="checkbox" id="mgr-consent"> <span>Я даю согласие на обработку персональных данных в соответствии с 152-ФЗ и принимаю <a href="privacy.html" target="_blank" rel="noopener">политику конфиденциальности</a></span></label>';
-        const send = document.createElement('button');
-        send.type = 'button';
-        send.className = 'mgr__chip mgr__chip--main';
-        send.textContent = 'Отправить заявку';
-        send.disabled = true;
-        mgrQuick.appendChild(send);
-        document.getElementById('mgr-consent').addEventListener('change', (e) => { send.disabled = !e.target.checked; });
-        send.addEventListener('click', () => {
-          mgrQuick.innerHTML = '';
-          say('Отправить заявку', 'me');
-          chat.step = 4;
-          // TODO: отправьте заявку из чата туда же, куда и форму (CRM, почта, Telegram-бот)
-          // fetch('/api/lead', { method: 'POST', body: JSON.stringify({ name: chat.name, phone: chat.phone, area: chat.area, source: 'chat' }) })
-          botSay('Готово, ' + chat.name + '! Заявка принята: ' + chat.phone + ', площадь ' + chat.area + '. Перезвоню в течение 15 минут в рабочее время.');
-        });
-      });
+  const setInput = (kind) => {
+    mgrIn.disabled = false;
+    mgrIn.type = kind === 'tel' ? 'tel' : 'text';
+    mgrIn.inputMode = kind === 'tel' ? 'tel' : 'text';
+    mgrIn.placeholder = kind === 'tel' ? '+7 (___) ___-__-__' : kind === 'name' ? 'Ваше имя' : 'Спросите про ремонт…';
+  };
+
+  const norm = (t) => ' ' + t.toLowerCase().replace(/ё/g, 'е').replace(/[^a-zа-я0-9\s]/g, ' ').replace(/\s+/g, ' ') + ' ';
+  const findTopic = (text) => {
+    const n = norm(text);
+    let best = null;
+    let bestScore = 0;
+    TOPICS.forEach((t) => {
+      // «Спасибо» и «здравствуйте» уступают настоящему вопросу в той же фразе
+      const score = t.keys.reduce((sum, k) => sum + (n.includes(k) ? k.length : 0), 0) * (t.weak ? 0.3 : 1);
+      if (score > bestScore) { best = t; bestScore = score; }
+    });
+    return best;
+  };
+  // «54», «54 м2», «54 квадрата», «54 метра» → 54
+  const findArea = (text, loose) => {
+    const m = norm(text).match(/(\d{2,3})(?:[.,]\d+)?\s*(м|кв|квадрат|метр)/);
+    if (m) return Number(m[1]);
+    const only = text.trim().match(/^(\d{2,3})$/);
+    return loose && only ? Number(only[1]) : 0;
+  };
+  // Если в вопросе назван формат ремонта — считаем только его
+  const TYPE_KEYS = { 'Косметический': 'космет', 'Капитальный': 'капитал', 'Новостройка': 'новостр', 'Дизайнерский': 'дизайн' };
+  const priceForArea = (area, text) => 'Для ' + area + ' м² ориентировочно, работы под ключ:\n' +
+    PRICES.filter(([name], _, all) => {
+      const named = all.filter(([n]) => norm(text).includes(TYPE_KEYS[n]));
+      return !named.length || named.some(([n]) => n === name);
+    }).map(([name, perM, days]) => '• ' + name.toLowerCase() + ' — от ' + money(area * perM) + ', ' + days).join('\n') +
+    '\nТочную смету зафиксируем после бесплатного замера.';
+
+  const offerCall = () => quickReplies([CALL, 'Сколько стоит?', 'Сроки ремонта']);
+
+  const startCallback = () => {
+    if (chat.sent) {
+      botSay('Заявка уже у меня — перезвоню на ' + chat.phone + '. А пока можно спросить ещё что-нибудь.', () => quickReplies(START_CHIPS.filter((c) => c !== CALL)));
+      return;
     }
+    if (chat.phone) { askConsent(); return; }
+    chat.mode = 'name';
+    setInput('name');
+    botSay('С удовольствием перезвоню. Как к вам обращаться?');
   };
-  const chatAnswer = (raw) => {
+  const askConsent = () => {
+    chat.mode = 'consent';
+    mgrIn.disabled = true;
+    botSay('Почти готово! Подтвердите согласие на обработку данных — и я передам номер прорабу.', () => {
+      mgrQuick.innerHTML = '<label class="mgr__consent"><input type="checkbox" id="mgr-consent"> <span>Я даю согласие на обработку персональных данных в соответствии с 152-ФЗ и принимаю <a href="privacy.html" target="_blank" rel="noopener">политику конфиденциальности</a></span></label>';
+      const send = document.createElement('button');
+      send.type = 'button';
+      send.className = 'mgr__chip mgr__chip--main';
+      send.textContent = 'Жду звонка';
+      send.disabled = true;
+      mgrQuick.appendChild(send);
+      mgrLog.scrollTop = mgrLog.scrollHeight;
+      document.getElementById('mgr-consent').addEventListener('change', (e) => { send.disabled = !e.target.checked; });
+      send.addEventListener('click', () => {
+        mgrQuick.innerHTML = '';
+        say('Жду звонка', 'me');
+        chat.sent = true;
+        chat.mode = 'qa';
+        setInput('qa');
+        // TODO: отправьте заявку из чата туда же, куда и форму (CRM, почта, Telegram-бот)
+        // fetch('/api/lead', { method: 'POST', body: JSON.stringify({ name: chat.name, phone: chat.phone, source: 'chat' }) })
+        botSay('Готово, ' + chat.name + '! Перезвоню на ' + chat.phone + ' в течение 15 минут в рабочее время (ежедневно 9:00–21:00). Пока можно спросить ещё что-нибудь.',
+          () => quickReplies(['Сколько стоит?', 'Сроки ремонта', 'Как идёт оплата?']));
+      });
+    });
+  };
+
+  const answerQuestion = (text) => {
+    // Номер телефона прямо в сообщении — сразу оформляем звонок
+    const digits = text.replace(/\D/g, '');
+    if (digits.length === 11 && /^[78]/.test(digits) && !findArea(text)) {
+      chat.phone = formatPhone(text);
+      if (!chat.name) { chat.mode = 'name'; setInput('name'); botSay('Записала номер. Как к вам обращаться?'); return; }
+      askConsent();
+      return;
+    }
+    const area = findArea(text, chat.awaitArea);
+    if (area) {
+      chat.awaitArea = false;
+      chat.answered += 1;
+      botSay(priceForArea(area, text), () => quickReplies(['Что входит в смету?', 'Как идёт оплата?', CALL]));
+      return;
+    }
+    const topic = CHIP_TOPIC[text] ? TOPICS.find((t) => t.id === CHIP_TOPIC[text]) : findTopic(text);
+    if (topic && topic.call) { startCallback(); return; }
+    if (!topic) {
+      botSay('Не совсем поняла вопрос. Лучше всего я знаю про цены, сроки, договор, оплату и материалы. А если вопрос про вашу квартиру — оставьте номер, прораб перезвонит и всё разберёт.', offerCall);
+      return;
+    }
+    chat.awaitArea = Boolean(topic.area);
+    chat.answered += 1;
+    let reply = topic.a;
+    // После нескольких ответов мягко предлагаем звонок — один раз
+    if (chat.answered === 3 && !chat.phone && topic.id !== 'thanks') reply += '\n\nЕсли удобнее обсудить голосом — оставьте номер, перезвоню за 15 минут.';
+    botSay(reply, () => quickReplies(topic.chips));
+  };
+
+  const onUser = (raw) => {
     const text = String(raw).trim();
-    if (!text || chat.step > 2) return;
-    if (chat.step === 1 && text.replace(/\D/g, '').length !== 11) {
+    if (!text) return;
+    if (chat.mode === 'consent') return;
+    if (chat.mode === 'phone' && text !== CALL && text.replace(/\D/g, '').length !== 11) {
       botSay('Кажется, в номере не хватает цифр. Проверьте, пожалуйста.');
       return;
     }
     say(text, 'me');
-    if (chat.step === 0) chat.name = text;
-    if (chat.step === 1) chat.phone = text;
-    if (chat.step === 2) chat.area = text;
     mgrIn.value = '';
     mgrQuick.innerHTML = '';
-    chat.step += 1;
-    chatAsk();
+    if (chat.mode === 'name') {
+      chat.name = text.slice(0, 40);
+      if (chat.phone) { askConsent(); return; }
+      chat.mode = 'phone';
+      setInput('tel');
+      botSay(chat.name + ', очень приятно! Оставьте номер телефона.');
+      return;
+    }
+    if (chat.mode === 'phone') {
+      chat.phone = text;
+      askConsent();
+      return;
+    }
+    if (text === CALL) { startCallback(); return; }
+    answerQuestion(text);
   };
+
+  const chatStart = () => {
+    setInput('qa');
+    botSay('Здравствуйте! Я Анна, менеджер REMONT DESIGN. Спросите что угодно про ремонт — цены, сроки, договор, материалы. Или оставьте номер — перезвоню.',
+      () => quickReplies(START_CHIPS));
+  };
+
   mgrIn.addEventListener('input', () => {
-    if (chat.step === 1) mgrIn.value = formatPhone(mgrIn.value);
+    if (chat.mode === 'phone') mgrIn.value = formatPhone(mgrIn.value);
   });
   mgrForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    chatAnswer(mgrIn.value);
+    onUser(mgrIn.value);
   });
 
   const openChat = () => {
     mgr.hidden = false;
     mgrBtn.setAttribute('aria-expanded', 'true');
-    if (!chat.started) { chat.started = true; chatAsk(); }
+    if (!chat.started) { chat.started = true; chatStart(); }
     setTimeout(() => { if (!mgrIn.disabled) mgrIn.focus({ preventScroll: true }); }, 50);
   };
   const closeChat = () => {

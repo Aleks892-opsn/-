@@ -1543,7 +1543,7 @@ em { font-style: italic; }
 .mgr__close { display: grid; place-items: center; width: 40px; height: 40px; background: none; border: 0; color: var(--sand-300); cursor: pointer; }
 .mgr__close:hover { color: var(--gold-500); }
 .mgr__log { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 14px; overflow-y: auto; overscroll-behavior: contain; }
-.mgr__msg { max-width: 84%; padding: 10px 14px; font-size: 15px; line-height: 1.45; animation: mgr-pop 300ms var(--ease); }
+.mgr__msg { max-width: 84%; padding: 10px 14px; font-size: 15px; line-height: 1.45; white-space: pre-line; animation: mgr-pop 300ms var(--ease); }
 .mgr__msg--bot { align-self: flex-start; background: var(--ink-600); border-radius: 4px 16px 16px 16px; }
 .mgr__msg--me { align-self: flex-end; background: var(--gold-500); color: var(--ink-900); border-radius: 16px 4px 16px 16px; }
 @keyframes mgr-pop { from { opacity: 0; transform: translateY(8px); } }
@@ -1564,6 +1564,7 @@ em { font-style: italic; }
   cursor: pointer;
 }
 .mgr__chip:hover { border-color: var(--gold-500); color: var(--gold-500); }
+.mgr__chip--call { border-color: var(--line-strong); color: var(--gold-500); }
 .mgr__chip--main { background: var(--gold-500); border-color: var(--gold-500); color: var(--ink-900); font-weight: 600; }
 .mgr__chip--main:disabled { opacity: 0.4; cursor: default; }
 .mgr__consent { display: flex; gap: 10px; align-items: flex-start; width: 100%; font-size: 12px; line-height: 1.45; color: var(--sand-300); }
