@@ -240,8 +240,8 @@
   const baGallery = document.getElementById('ba-gallery');
   if (baGallery) {
     const PROJECTS = [
-      { title: 'ЖК «Символ» · 78 м² · дизайнерский ремонт · 58 дней' },
       { title: 'Хамовники · 64 м² · капитальный ремонт · 52 дня' },
+      { title: 'ЖК «Символ» · 78 м² · дизайнерский ремонт · 58 дней' },
     ];
     const slides = [...baGallery.querySelectorAll('.ba')];
     const baTitle = document.getElementById('ba-title');

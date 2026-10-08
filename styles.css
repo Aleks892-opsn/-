@@ -691,8 +691,8 @@ em { font-style: italic; }
 /* Фото «до» и «после» одного размера и кадрирования — совпадают пиксель в пиксель */
 .ba__img, .ba__img img { display: block; width: 100%; height: 100%; }
 .ba__img img { object-fit: cover; object-position: var(--ba-focus, 50%) 50%; pointer-events: none; -webkit-user-drag: none; }
-.ba[data-project="0"] { --ba-focus: 62%; }
-.ba[data-project="1"] { --ba-focus: 40%; }
+.ba[data-project="0"] { --ba-focus: 40%; }
+.ba[data-project="1"] { --ba-focus: 62%; }
 .ba__tag {
   position: absolute;
   top: var(--space-4);
